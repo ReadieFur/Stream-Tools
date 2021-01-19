@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>AWS_Stream_Chat</RootNamespace>
+    <UserSecretsId>a4e376f0-25e7-47ad-9fba-1db7facb5ddd</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="%2a%2a\**" />
+    <Compile Remove="pnpm-lock.yaml\**" />
+    <Compile Remove="wwwroot\js\**" />
+    <Content Remove="%2a%2a\**" />
+    <Content Remove="pnpm-lock.yaml\**" />
+    <Content Remove="wwwroot\js\**" />
+    <EmbeddedResource Remove="%2a%2a\**" />
+    <EmbeddedResource Remove="pnpm-lock.yaml\**" />
+    <EmbeddedResource Remove="wwwroot\js\**" />
+    <None Remove="%2a%2a\**" />
+    <None Remove="pnpm-lock.yaml\**" />
+    <None Remove="wwwroot\js\**" />
+    <TypeScriptCompile Remove="%2a%2a\**" />
+    <TypeScriptCompile Remove="pnpm-lock.yaml\**" />
+    <TypeScriptCompile Remove="wwwroot\js\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Remove="%2a%2a\%2a.ts" />
+    <TypeScriptCompile Remove="%2a%2a\%2a.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="TwitchLib" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+</Project>
