@@ -1,9 +1,9 @@
 ﻿const path = require("path");
 module.exports = {
-    entry: "./ts_src/main.ts",
+    entry: "./ts_src/main.ts.ts",
     output: {
         path: path.resolve(__dirname, "wwwroot"),
-        filename: "[name].js",
+        filename: "[name].ts.js",
         publicPath: "/"
     },
     resolve: {

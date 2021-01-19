@@ -4,6 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
+    "build": "webpack --mode=development",
     "debug": "webpack --mode=development --watch",
     "release": "npm run release && dotnet publish -c Release"
   },
