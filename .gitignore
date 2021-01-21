@@ -11,3 +11,4 @@ node_modules/
 #.htaccess
 #package.json
 #pnpm-lock.yaml
+oAuthToken.txt

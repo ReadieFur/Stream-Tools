@@ -1,0 +1,21 @@
+:tmi.twitch.tv CAP * ACK :twitch.tv/tags twitch.tv/commands twitch.tv/membership
+
+:tmi.twitch.tv 001 kof_readie :Welcome, GLHF!
+:tmi.twitch.tv 002 kof_readie :Your host is tmi.twitch.tv
+:tmi.twitch.tv 003 kof_readie :This server is rather new
+:tmi.twitch.tv 004 kof_readie :-
+:tmi.twitch.tv 375 kof_readie :-
+:tmi.twitch.tv 372 kof_readie :You are in a maze of twisty passages, all alike.
+:tmi.twitch.tv 376 kof_readie :>
+@badge-info=;badges=;color=#8A2BE2;display-name=kof_readie;emote-sets=0,300206307,300374282,592920959;user-id=434089842;user-type= :tmi.twitch.tv GLOBALUSERSTATE
+
+:kof_readie!kof_readie@kof_readie.tmi.twitch.tv JOIN #kof_readie
+:kof_readie.tmi.twitch.tv 353 kof_readie = #kof_readie :kof_readie
+:kof_readie.tmi.twitch.tv 366 kof_readie #kof_readie :End of /NAMES list
+@badge-info=;badges=broadcaster/1;color=#8A2BE2;display-name=kof_readie;emote-sets=0,300206307,300374282,592920959;mod=0;subscriber=0;user-type= :tmi.twitch.tv USERSTATE #kof_readie
+@emote-only=0;followers-only=-1;r9k=0;rituals=0;room-id=434089842;slow=0;subs-only=0 :tmi.twitch.tv ROOMSTATE #kof_readie
+
+:streamlabs!streamlabs@streamlabs.tmi.twitch.tv JOIN #kof_readie
+:anotherttvviewer!anotherttvviewer@anotherttvviewer.tmi.twitch.tv JOIN #kof_readie
+:kof_readiealt!kof_readiealt@kof_readiealt.tmi.twitch.tv JOIN #kof_readie
+:streamelements!streamelements@streamelements.tmi.twitch.tv JOIN #kof_readie
