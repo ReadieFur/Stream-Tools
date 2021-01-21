@@ -1,0 +1,214 @@
+#settingsContainer
+{
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+#settingsBackground
+{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+#settingsMenu
+{
+    width: 800px;
+    height: 500px;
+    background-color: rgb(var(--backgroundAlt));
+    border: 1px solid rgb(var(--foreground));
+    border-radius: 10px;
+}
+
+#settingsMenu > table
+{
+    height: 100%;
+    width: 100%;
+}
+
+.settingsRadioTabs
+{
+    width: 230px;
+    vertical-align: text-top;
+}
+
+/*#region Radio button*/
+.radioButtonContainer
+{
+    display: block;
+    position: relative;
+    padding-left: 20px;
+    margin: 20px 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.radioButtonContainer input
+{
+    position: absolute;
+    transform: translate(-200%, 50%); /*Hide the orignal button inside of itself*/
+    opacity: 0;
+    cursor: pointer;
+}
+
+.radioButton
+{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 15px;
+    width: 15px;
+    background-color: rgb(var(--background));
+    border: 1px solid rgb(var(--foreground));
+    border-radius: 50%;
+}
+
+.radioButtonContainer input:checked ~ .radioButton
+{
+    background-color: var(--main-accent);
+}
+
+.radioButton:after
+{
+    content: "";
+    position: absolute;
+}
+
+.radioButtonContainer .radioButton:after
+{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgb(var(--foreground));
+}
+/*#endregion*/
+
+/*#region Checkbox*/
+.checkboxContainer
+{
+    width: max-content;
+    display: block;
+    position: relative;
+    padding-left: 20px;
+    margin: 20px 10px;
+    cursor: pointer;
+    user-select: none;
+}
+  
+.checkboxContainer input
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+  
+.checkmark
+{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 15px;
+    width: 15px;
+    background-color: rgb(var(--background));
+    border: 1px solid rgb(var(--foreground));
+}
+  
+.checkboxContainer input:checked ~ .checkmark
+{
+    background-color: var(--main-accent);
+}
+  
+.checkmark:after
+{
+    content: "";
+    position: absolute;
+    display: none;
+}
+  
+.checkboxContainer input:checked ~ .checkmark:after
+{
+    display: block;
+}
+  
+.checkboxContainer .checkmark:after
+{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 3px;
+    height: 8px;
+    border: solid rgb(var(--foreground));
+    border-width: 0 2px 2px 0;
+}
+/*#endregion*/
+
+.settingsTitleRow { height: max-content; }
+
+.settingsTitleRow > th > h3
+{
+    text-align: left;
+    padding-left: 10px;
+}
+
+.settingsTabs
+{
+    vertical-align: text-top;
+}
+
+.settingsTabs > table
+{
+    width: 100%;
+    height: 100%;
+}
+
+.settingsTabs > table > tbody > tr
+{
+    vertical-align: text-top;
+}
+
+input[type="text"]
+{
+    border: none;
+    border-bottom: 1px solid rgb(var(--foreground));
+    width: 40%;
+    box-sizing: border-box;
+    height: 30px;
+    background-color: transparent;
+}
+
+/*#region CredentialsTab*/
+#credentialsTab > p
+{
+    margin-bottom: 2.5px;
+}
+
+#credentialsTab > input
+{
+    outline-width: 0;
+    margin-bottom: 15px;
+    font-weight: normal;
+    width: 300px;
+}
+
+.oAuthTip > a
+{
+    font-weight: normal;
+    color: #00B5EE;
+}
+
+#credentialsTab > button
+{
+    margin-top: 20px;
+}
+/*#endregion*/
