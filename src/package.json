@@ -1,6 +1,7 @@
 {
 	"dependencies": {
+		"@aws-cdk/aws-lambda": "^1.86.0",
 		"@aws-cdk/aws-s3": "^1.86.0",
-		"@aws-cdk/aws-lambda": "^1.86.0"
+		"@types/jquery": "^3.5.5"
 	}
 }

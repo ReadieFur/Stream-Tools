@@ -1,0 +1,1 @@
+DELETE FROM stream_chat WHERE unid = '5f5943ccd7bf0'

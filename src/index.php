@@ -40,11 +40,13 @@
         </div>
         <div class="navigationContainer">
             <a id="settingsButton">Settings</a>
+            <a id="accountButton">Account</a>
         </div>
     </section>
 </header>
 <span class="slideMenu"></span>
 <body>
+    <iframe id="account"></iframe>
     <div id="settingsContainer">
         <div id="settingsBackground"></div>
         <div id="settingsMenu" class="center">
@@ -81,10 +83,12 @@
                                 <tbody>
                                     <tr>
                                         <td id="credentialsTab" class="displayNone">
-                                            <p>Username</p>
-                                            <input type="text" id="username" minlength="5" maxlength="24">
-                                            <p>oAuth Token</p>
-                                            <input type="text" id="oAuthToken" minlength="30" maxlength="36">
+                                            <form id="twitchCredentialsForm">
+                                                <p>Username</p>
+                                                <input type="text" id="username" minlength="5" maxlength="24" autocomplete="username">
+                                                <p>oAuth Token</p>
+                                                <input type="password" id="oAuthToken" minlength="30" maxlength="36" autocomplete="current-password">
+                                            </form>
                                             <br>
                                             <small class="oAuthTip">
                                                 To obtain an oAuth token get one from
@@ -131,26 +135,7 @@
                 <td>
                     <div>
                         <table id="chatTable">
-                            <tbody>
-                                <tr>
-                                    <td class="time">11:22</td>
-                                    <td class="username">kof_readie</td>
-                                    <td class="message">hi there, this is a test message!</td>
-                                </tr>
-                                <tr class="rowSpacer"></tr>
-                                <tr>
-                                    <td class="time">11:28</td>
-                                    <td class="username">Lorem_Ipsum</td>
-                                    <td class="message">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</td>
-                                </tr>
-                                <tr class="rowSpacer"></tr>
-                                <tr>
-                                    <td class="time">11:25</td>
-                                    <td class="username">other_user</td>
-                                    <td class="message">Is this real? Or is it a dream.</td>
-                                </tr>
-                                <tr class="rowSpacer"></tr>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </td>
