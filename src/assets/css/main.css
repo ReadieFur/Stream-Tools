@@ -237,3 +237,13 @@ hr
     to { opacity: 0 }
 }
 /*#endregion*/
+
+#account
+{
+    z-index: 1001; /*Make these organised*/
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    border-width: 0;
+    display: none;
+}

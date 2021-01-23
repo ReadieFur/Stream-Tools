@@ -3,12 +3,18 @@ import { EventDispatcher } from "./eventDispatcher.ts";
 export class TwitchWS
 {
     public eventDispatcher: EventDispatcher;
-    private client!: WebSocket;
+    private client!: WebSocket; //Add checks to see if the client is connected
     private username!: string;
 
     constructor()
     {
         this.eventDispatcher = new EventDispatcher();
+        this.eventDispatcher.addListener("sendMessage", (message: string) => { this.SendMessage(message); });
+    }
+
+    public GetUsername(): string
+    {
+        return this.username;
     }
 
     public Connect(_oAuth: string, _username: string): void
@@ -35,7 +41,13 @@ export class TwitchWS
         var data: string = String(_data.data);
         if (data.startsWith("PING :tmi.twitch.tv")) { this.client.send("PONG :tmi.twitch.tv"); }
         else if (data.startsWith(`:tmi.twitch.tv 001 ${this.username} :Welcome, GLHF!`)) { this.eventDispatcher.dispatch("connect"); }
-        else if (data.startsWith(`:${this.username}!${this.username}@${this.username}.tmi.twitch.tv JOIN #${this.username}`)) { this.eventDispatcher.dispatch("join"); }
+        else if (data.startsWith(`:${this.username}!${this.username}@${this.username}.tmi.twitch.tv JOIN #${this.username}`))
+        {
+            this.eventDispatcher.dispatch("join",
+            {
+                username: this.username
+            });
+        }
         else if (data.includes("PRIVMSG")) { this.eventDispatcher.dispatch("message", this.DecodeMessage(data, "PRIVMSG")); } //Create types for each of these
     }
 
@@ -69,6 +81,11 @@ export class TwitchWS
             result[keyValuePair[0]] = value;
         }
         return result;
+    }
+
+    private SendMessage(message: string)
+    {
+        this.client.send(`PRIVMSG #${this.username} :${message}`);
     }
 }
 
