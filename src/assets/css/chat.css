@@ -131,3 +131,8 @@ table
     background: rgb(var(--foreground));
     cursor: pointer;
 }
+
+#ttsPlayer
+{
+    display: none;
+}

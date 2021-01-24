@@ -58,6 +58,8 @@ header > section { position: relative; z-index: 9999; }
     margin-left: 50px;
 }
 
+.navigationContainer > a { cursor: pointer; }
+
 .naviDropdown > a:hover { cursor: default; }
 
 .navigationContainer > *:hover { color: var(--main-accent); }

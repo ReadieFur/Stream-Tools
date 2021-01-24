@@ -5,10 +5,11 @@ tmp
 template.*
 .exclude/
 *.ts.js
+bundle.js
 #tsconfig.json
 #/node_modules/
 node_modules/
 #.htaccess
 #package.json
-#pnpm-lock.yaml
-oAuthToken.txt
+pnpm-lock.yaml
+misc_data

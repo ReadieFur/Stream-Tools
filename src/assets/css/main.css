@@ -247,3 +247,8 @@ hr
     border-width: 0;
     display: none;
 }
+
+.disabled *
+{
+    color: gray !important;
+}
