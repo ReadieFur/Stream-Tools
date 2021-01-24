@@ -1,11 +1,15 @@
-import { EventDispatcher } from "./eventDispatcher.ts.js";
-import { Main } from "./main.ts.js"
-import { TwitchWS, PRIVMSG } from "./twitchWS.ts.js";
+import { EventDispatcher } from "./eventDispatcher";
+import { Main } from "./main"
+import { TwitchWS, PRIVMSG } from "./twitchWS";
+import { SpeechManager } from "./speechManager";
 
+//I will be implementing filters and spam detection as settings that can be configured by the user at some point.
+//This will also help cut down on the AWS Polly character quota if the user has this option enabled.
 export class ChatManager
 {
     public eventDispatcher: EventDispatcher;
 
+    private speechManager: SpeechManager;
     private volumeSlider!: HTMLInputElement;
     private volumePercent!: HTMLParagraphElement;
     private sendMessageButton!: HTMLButtonElement;
@@ -18,12 +22,14 @@ export class ChatManager
     {
         this.eventDispatcher = new EventDispatcher();
         this.twitchWS = new TwitchWS();
+        this.speechManager = new SpeechManager();
 
         window.addEventListener("load", () => { this.WindowLoadEvent(); });
         this.twitchWS.eventDispatcher.addListener("join", (data: any) => { this.eventDispatcher.dispatch("join", data); });
-        this.twitchWS.eventDispatcher.addListener("message", (data: any) => { this.eventDispatcher.dispatch("message", data); });
+        this.twitchWS.eventDispatcher.addListener("message", (data: PRIVMSG) => { this.eventDispatcher.dispatch("message", data); });
 
-        this.eventDispatcher.addListener("message", (data: any) => { this.OnMessage(data); });
+        this.eventDispatcher.addListener("message", (data: PRIVMSG) => { this.OnMessage(data); });
+        this.eventDispatcher.addListener("message", (data: PRIVMSG) => { this.speechManager.OnMessage(data); });
     }
 
     private WindowLoadEvent(): void
@@ -37,17 +43,17 @@ export class ChatManager
         this.messageInput.addEventListener("keypress", (data: KeyboardEvent) => { this.MessageInputOnKeypress(data); });
     }
 
-    public UpdateCredentials(data: { oAuth: string, username: string }): void
-    {
-        this.twitchWS.Connect(data.oAuth, data.username);
-    }
+    //I need a better way of doing this, probably contain everything in main and callback to there.
+    public UpdateTwitchCredentials(data: { oAuth: string, username: string }): void
+    { this.twitchWS.Connect(data.oAuth, data.username); }
 
-    public OnMessage(data: PRIVMSG): void
-    {
-        this.UpdateChatTable(data.display_name, data.message);
-    }
+    public ToggleTTS(data: boolean) { this.speechManager.ToggleTTS(data); }
 
-    private UpdateChatTable(username: string, message: string)
+    public AWSCredentialsUpdated(data: any) { this.speechManager.AWSCredentialsUpdated(data); }
+
+    public OnMessage(data: PRIVMSG): void { this.UpdateChatTable(data.display_name, data.message); }
+
+    private UpdateChatTable(username: string, message: string) //Add emote support
     {
         var rowSpacerElement = document.createElement("tr");
         var trElement = document.createElement("tr");

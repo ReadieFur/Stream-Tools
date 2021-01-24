@@ -1,18 +1,17 @@
-import { TestClass } from "./testClass.ts.js";
-import { HeaderSlide } from "./headerSlide.ts.js";
-import { Settings } from "./settings.ts.js";
-import { ChatManager } from "./chatManager.ts.js";
-import { SpeechManager } from "./speechManager.ts.js";
+import { TestClass } from "./testClass";
+import { HeaderSlide } from "./headerSlide";
+import { Settings } from "./settings";
+import { ChatManager } from "./chatManager";
 
 declare var WEB_ROOT: string;
 
+//I may need to configure webpack for this to compile nicely with the AWS scripts
 export class Main
 {
     public static WEB_ROOT: string;
 
     private settings: Settings;
     private chatManager: ChatManager;
-    //private speechManager: SpeechManager;
 
     private accountButton!: HTMLLinkElement;
     private accountContainer!: HTMLIFrameElement;
@@ -20,20 +19,20 @@ export class Main
     constructor()
     {
         //new TestClass(); /*REMEMBER TO COMMENT THIS OUT FOR RELEASE*/
-        
-        Main.WEB_ROOT = WEB_ROOT;
 
+        Main.WEB_ROOT = WEB_ROOT;
         new HeaderSlide();
-        this.settings = new Settings();
         this.chatManager = new ChatManager();
-        //this.speechManager = new SpeechManager();
+        this.settings = new Settings(); //Settings should load last
 
         window.addEventListener("load", this.WindowLoadEvent);
         window.addEventListener("DOMContentLoaded", this.DOMContentLoadedEvent);
 
-        this.settings.eventDispatcher.addListener("ShowLoginMenu", () => { Main.ToggleMenu(this.accountButton, this.accountContainer); });
-        this.settings.eventDispatcher.addListener("CredentialsUpdated", (data: any) => { this.chatManager.UpdateCredentials(data); });
         this.chatManager.eventDispatcher.addListener("join", (data: any) => { this.settings.OnJoin(data); });
+        this.settings.eventDispatcher.addListener("showLoginMenu", () => { Main.ToggleMenu(this.accountButton, this.accountContainer); });
+        this.settings.eventDispatcher.addListener("twitchCredentialsUpdated", (data: any) => { this.chatManager.UpdateTwitchCredentials(data); });
+        this.settings.eventDispatcher.addListener("toggleTTS", (data: boolean) => { this.chatManager.ToggleTTS(data); });
+        this.settings.eventDispatcher.addListener("awsCredentialsUpdated", (data: any) => { this.chatManager.AWSCredentialsUpdated(data); });
     }
 
     private WindowLoadEvent(): void
@@ -54,7 +53,7 @@ export class Main
         });
     }
 
-    private DOMContentLoadedEvent(): void
+    private DOMContentLoadedEvent(): void //Update this
     {
         if (Main.RetreiveCache("READIE-DARK") != "false") { Main.DarkTheme(true); }
         else { Main.DarkTheme(false); }
@@ -75,7 +74,7 @@ export class Main
     public static DarkTheme(dark: boolean): void
     {
         Main.SetCache("READIE-DARK", dark ? "true" : "false", 365);
-        var darkButton: HTMLInputElement | null = document.querySelector("#darkMode")!.querySelector("input");
+        var darkButton: HTMLInputElement | null = document.querySelector("#darkMode > input");
         var themeColours: HTMLStyleElement | null = document.querySelector("#themeColours");
         if (dark) { darkButton!.checked = true; }
         else { darkButton!.checked = false; }
@@ -132,6 +131,11 @@ export class Main
             button.classList.add("accentText");
             container.style.display = "block";
         }
+    }
+
+    public static Alert(message: string)
+    {
+        //Alert box popup
     }
 }
 new Main();

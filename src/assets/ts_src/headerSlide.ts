@@ -1,4 +1,4 @@
-import { Main } from "./main.ts.js";
+import { Main } from "./main";
 
 export class HeaderSlide
 {

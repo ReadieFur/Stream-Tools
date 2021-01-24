@@ -1,4 +1,4 @@
-import { EventDispatcher } from "./eventDispatcher.ts";
+import { EventDispatcher } from "./eventDispatcher";
 
 export class TwitchWS
 {
