@@ -24,7 +24,8 @@
     <link rel="stylesheet" type="text/css" href="<?php echo $WEB_ROOT; ?>/assets/css/chat.css"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $WEB_ROOT; ?>/assets/css/settings.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="<?php echo $WEB_ROOT; ?>/assets/js/main.ts.js" type="module"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.831.0.min.js"></script>
+    <script src="<?php echo $WEB_ROOT; ?>/assets/js/bundle.js" type="module"></script>
     <script>var WEB_ROOT = "<?php echo $WEB_ROOT; ?>";</script>
     <style id="themeColours"></style>
 </head>
@@ -89,13 +90,14 @@
                                                 <p>oAuth Token</p>
                                                 <input type="password" id="oAuthToken" minlength="30" maxlength="36" autocomplete="current-password">
                                             </form>
-                                            <br>
-                                            <small class="oAuthTip">
-                                                To obtain an oAuth token get one from
-                                                <a href="https://twitchapps.com/tmi/" target="_blank">Twitch's oAuth token generator.</a>
+                                            <small>
+                                                To obtain an oAuth token get one from Twitch's
+                                                <a class="link" href="https://twitchapps.com/tmi/" target="_blank">
+                                                    oAuth token generator.
+                                                </a>
                                             </small>
                                             <br>
-                                            <button class="hollowButton" id="updateCredentials">Connect</button>
+                                            <button class="hollowButton" id="updateCredentials">Save</button>
                                             <p id="credentialsAlert"></p>
                                         </td>
                                         <td id="ttsTab" class="displayNone">
@@ -104,12 +106,29 @@
                                                 <input type="checkbox" disabled>
                                                 <span class="checkmark"></span>
                                             </label>
-                                            <div>
-                                                <label class="checkboxContainer" id="useAWS">
-                                                    <span><h5>Use AWS</h5></span>
-                                                    <input type="checkbox" disabled>
-                                                    <span class="checkmark"></span>
-                                                </label>
+                                            <div id="ttsSettings">
+                                                <!--<div id="optionsContainer">
+                                                    <label class="checkboxContainer" id="useAWS">
+                                                        <span><h5>Use AWS</h5></span>
+                                                        <input type="checkbox" disabled>
+                                                        <span class="checkmark"></span>
+                                                    </label>
+                                                </div>-->
+                                                <div id="ttsOptionsContainer">
+                                                    <form id="awsCredentialsForm">
+                                                        <p>Region</p>
+                                                        <input type="text" id="awsRegion" autocomplete="username">
+                                                        <p>Identity Pool ID</p>
+                                                        <input type="password" id="awsIdentityPoolID" autocomplete="current-password">
+                                                        <br>
+                                                        <small>
+                                                            To obtain these details please read the
+                                                            <a class="link" href="https://github.com/kOFReadie/AWS-Polly-for-SpeechChat/blob/master/AWS%20Setup.md" target="_blank">guide</a>
+                                                            I have written on my GitHub.
+                                                        </small>
+                                                    </form>
+                                                    <button class="hollowButton" id="updateAWSCredentials">Save</button>
+                                                </div>
                                             </div>
                                         </td>
                                         <!--<td id="vcTab" class="displayNone"></td>-->
@@ -145,6 +164,7 @@
                     <textarea id="messageInput" placeholder="Send a message"></textarea>
                     <div>
                         <div>
+                            <audio id="ttsPlayer"></audio>
                             <p id="volumePercent">50%</p>
                             <input id="volumeSlider" type="range" min="1" max="100" value="50">
                             <button id="sendMessageButton">Send</button>

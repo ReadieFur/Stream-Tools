@@ -151,6 +151,11 @@
     border: solid rgb(var(--foreground));
     border-width: 0 2px 2px 0;
 }
+
+.settingsTabs .checkboxContainer
+{
+    margin-left: 0;
+}
 /*#endregion*/
 
 .settingsTitleRow { height: max-content; }
@@ -187,31 +192,35 @@ input[type="text"]
     background-color: transparent;
 }
 
-/*#region CredentialsTab*/
-#twitchCredentialsForm > p
+.settingsTabs p
 {
     margin-bottom: 2.5px;
 }
 
-#twitchCredentialsForm > input
+.settingsTabs input
 {
     outline-width: 0;
     margin-bottom: 15px;
     font-weight: normal;
     width: 300px;
+    height: 30px;
     border: 0;
     background-color: transparent;
     border-bottom: 1px solid rgb(var(--foreground));
 }
 
-.oAuthTip > a
+.settingsTabs button
+{
+    margin-top: 20px;
+}
+
+.link
 {
     font-weight: normal;
     color: #00B5EE;
 }
 
-#credentialsTab > button
+#ttsOptionsContainer
 {
-    margin-top: 20px;
+    display: none;
 }
-/*#endregion*/
