@@ -123,11 +123,12 @@
                                                         <br>
                                                         <small>
                                                             To obtain these details please read the
-                                                            <a class="link" href="https://github.com/kOFReadie/AWS-Polly-for-SpeechChat/blob/master/AWS%20Setup.md" target="_blank">guide</a>
+                                                            <a class="link" href="https://github.com/kOFReadie/Stream-Chat/blob/master/AWS%20Setup.md" target="_blank">guide</a>
                                                             I have written on my GitHub.
                                                         </small>
                                                     </form>
                                                     <button class="hollowButton" id="updateAWSCredentials">Save</button>
+                                                    <p id="awsAlert"></p>
                                                 </div>
                                             </div>
                                         </td>
@@ -166,7 +167,7 @@
                         <div>
                             <audio id="ttsPlayer"></audio>
                             <p id="volumePercent">50%</p>
-                            <input id="volumeSlider" type="range" min="1" max="100" value="50">
+                            <input id="volumeSlider" type="range" min="0" max="100" value="50">
                             <button id="sendMessageButton">Send</button>
                         </div>
                     </div>

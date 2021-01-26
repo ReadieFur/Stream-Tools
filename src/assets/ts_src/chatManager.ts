@@ -26,10 +26,13 @@ export class ChatManager
 
         window.addEventListener("load", () => { this.WindowLoadEvent(); });
         this.twitchWS.eventDispatcher.addListener("join", (data: any) => { this.eventDispatcher.dispatch("join", data); });
-        this.twitchWS.eventDispatcher.addListener("message", (data: PRIVMSG) => { this.eventDispatcher.dispatch("message", data); });
-
-        this.eventDispatcher.addListener("message", (data: PRIVMSG) => { this.OnMessage(data); });
-        this.eventDispatcher.addListener("message", (data: PRIVMSG) => { this.speechManager.OnMessage(data); });
+        this.twitchWS.eventDispatcher.addListener("message", (data: PRIVMSG) =>
+        {
+            this.eventDispatcher.dispatch("message", data);
+            this.OnMessage(data);
+            this.speechManager.OnMessage(data);
+        });
+        //this.eventDispatcher.addListener("message", (data: PRIVMSG) => {}); //This event listner was being really weird so I moved the functions into the event listner above.
     }
 
     private WindowLoadEvent(): void
