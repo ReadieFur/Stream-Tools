@@ -1,5 +1,6 @@
 import { Main } from "./main";
 import { EventDispatcher } from "./eventDispatcher";
+import { mainModule } from "process";
 
 export class Settings
 {
@@ -34,9 +35,9 @@ export class Settings
         var _tabs: { [name: string]: string[] } =
         {
             credentials: ["username", "oAuthToken", "updateCredentials", "credentialsAlert"],
-            tts: ["ttsEnabled", "ttsOptionsContainer", "updateAWSCredentials"],
+            tts: ["ttsEnabled", "ttsOptionsContainer", "awsRegion", "awsIdentityPoolID", "awsAlert", "updateAWSCredentials"],
             //"vc": [],
-            other: []
+            other: [] //Dark theme handled by main.ts
         };
         this.tabs = {}; //Couldn't be bothered to keep re-writing the same lines again and again so I put it into this object
         Object.keys(_tabs).forEach(key =>
@@ -62,13 +63,13 @@ export class Settings
         this.ShowTab("credentials");
 
         this.tabs.credentials.elements.updateCredentials.addEventListener("click", () => { this.UpdateCredentials(); });
-        this.tabs.tts.elements.ttsEnabled.addEventListener("click", () => { this.ToggleTTS(); })
+        this.tabs.tts.elements.ttsEnabled.addEventListener("click", () => { this.ToggleTTS(true); })
         this.tabs.tts.elements.updateAWSCredentials.addEventListener("click", () => { this.UpdateAWSCredentials(); })
 
         this.LoadUserSettings();
     }
 
-    private ToggleTTS()
+    private ToggleTTS(save: boolean) //Getting messy again, need to tidy up
     {
         var input: HTMLInputElement = this.tabs.tts.elements.ttsEnabled.querySelector("input")!;
         var ttsMode: number; //As a number for the future
@@ -87,38 +88,42 @@ export class Settings
         }
         this.eventDispatcher.dispatch("toggleTTS", input.checked);
 
-        jQuery.ajax(
+        if (save)
         {
-            url: `${Main.WEB_ROOT}/assets/php/settings.php`,
-            method: "POST",
-            dataType: "json",
-            data:
+            jQuery.ajax(
             {
-                "q": JSON.stringify(
+                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+                method: "POST",
+                dataType: "json",
+                data:
                 {
-                    ttsMode: ttsMode,
-                    unid: Main.RetreiveCache("READIE-UI"),
-                    pass: Main.RetreiveCache("READIE-UP")
-                })
-            },
-            error: Main.ThrowAJAXJsonError,
-            success: (response: { result: any }) =>
-            {
-                if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
-            }
-        });
+                    "q": JSON.stringify(
+                    {
+                        ttsMode: ttsMode,
+                        unid: Main.RetreiveCache("READIE-UI"),
+                        pass: Main.RetreiveCache("READIE-UP")
+                    })
+                },
+                error: Main.ThrowAJAXJsonError,
+                success: (response: { result: any }) =>
+                {
+                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
+                }
+            });
+        }
     }
 
     private UpdateAWSCredentials() //Look into what checks should be placed here
     {
+        this.saveCredentials = true;
         var valid: boolean = false;
         var _region: string = (<HTMLInputElement>this.tabs.tts.elements.awsRegion).value;
         var _identityPoolID: string = (<HTMLInputElement>this.tabs.tts.elements.awsIdentityPoolID).value;
-        var alertMessage = this.tabs.tts.elements.credentialsAlert;
+        var alertMessage = this.tabs.tts.elements.awsAlert;
 
-        if (_region != "") { alertMessage.innerText = "Invalid Region."; }
+        if (_region == "") { alertMessage.innerText = "Invalid Region."; }
         else if (!_identityPoolID.startsWith(_region)) //From my testing the IdentityPoolID always starts with the region
-        { alertMessage.innerText = "Invalid Identity Pool ID"; }
+        { alertMessage.innerText = "Invalid Identity Pool ID."; }
         else { valid = true; }
 
         if (valid)
@@ -158,7 +163,7 @@ export class Settings
 
     private UpdateCredentials()
     {
-        //this.saveCredentials = true;
+        this.saveCredentials = true;
         var valid: boolean = false;
         var _username: string = (<HTMLInputElement>this.tabs.credentials.elements.username).value;
         var _oAuth: string = (<HTMLInputElement>this.tabs.credentials.elements.oAuthToken).value;
@@ -216,7 +221,7 @@ export class Settings
                     })
                 },
                 error: Main.ThrowAJAXJsonError,
-                success: (response: { result: any }) => //I do not need to check for the data type here as jQuery will try to steralise the JSON, if it fails then the error function will run
+                success: (response: { result: any }) => //I don't need to check for the data type here as jQuery will try to steralise the JSON, if it fails then the error function will run
                 {
                     if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
                 }
@@ -244,20 +249,26 @@ export class Settings
             success: (response: { result: any }) =>
             {
                 var data: StreamChatDB;
-                if ((response.result as StreamChatDB).unid != undefined) { data = response.result; }
-                else { throw new TypeError(`Response is not a type of StreamChatDB: ${response}`); }
-                
-                if (data.twitch_username != null && data.twitch_oauth != null)
+                if ((response.result as StreamChatDB) != null)
                 {
-                    (<HTMLInputElement>this.tabs.credentials.elements.username).value = data.twitch_username;
-                    (<HTMLInputElement>this.tabs.credentials.elements.oAuthToken).value = data.twitch_oauth;
-
-                    this.eventDispatcher.dispatch("twitchCredentialsUpdated",
+                    data = response.result;
+                    if (data.twitch_username != null && data.twitch_oauth != null)
                     {
-                        username: (<HTMLInputElement>this.tabs.credentials.elements.username).value,
-                        oAuth: (<HTMLInputElement>this.tabs.credentials.elements.oAuthToken).value
-                    });
+                        (<HTMLInputElement>this.tabs.credentials.elements.username).value = data.twitch_username;
+                        (<HTMLInputElement>this.tabs.credentials.elements.oAuthToken).value = data.twitch_oauth;
+                        this.eventDispatcher.dispatch("twitchCredentialsUpdated", { username: data.twitch_username, oAuth: data.twitch_oauth } );
+                    }
+
+                    if (data.tts_mode == 1) { this.ToggleTTS(false); }
+
+                    if (data.aws_region != null && data.aws_identity_pool != null)
+                    {
+                        (<HTMLInputElement>this.tabs.tts.elements.awsRegion).value = data.aws_region;
+                        (<HTMLInputElement>this.tabs.tts.elements.awsIdentityPoolID).value = data.aws_identity_pool;
+                        this.eventDispatcher.dispatch("awsCredentialsUpdated", { awsRegion: data.aws_region, awsIdentityPoolID: data.aws_identity_pool });
+                    }
                 }
+                else { console.log("No user data found"); }
             }
         });
     }
@@ -280,7 +291,7 @@ type StreamChatDB =
     tts_filters_enabled: boolean,
     tts_filters: string[] | null,
     aws_region: string | null,
-    aws_identity_pool: boolean,
+    aws_identity_pool: string,
     stt_enabled: boolean,
     stt_listeners: string | null
 }
