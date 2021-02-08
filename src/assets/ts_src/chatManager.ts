@@ -54,24 +54,20 @@ export class ChatManager
 
     public AWSCredentialsUpdated(data: any) { this.speechManager.AWSCredentialsUpdated(data); }
 
-    public OnMessage(data: PRIVMSG): void { this.UpdateChatTable(data.display_name, data.message); }
-
-    private UpdateChatTable(username: string, message: string) //Add emote support
+    private UpdateChatTable(username: string, messageElement: HTMLTableDataCellElement) //Add emote support
     {
         var rowSpacerElement = document.createElement("tr");
         var trElement = document.createElement("tr");
         var timeElement = document.createElement("td");
         var usernameElement = document.createElement("td");
-        var messageElement = document.createElement("td");
 
         rowSpacerElement.className = "rowSpacer";
         var date = new Date();
         timeElement.className = "time";
-        timeElement.innerHTML = `${date.getHours()}:${date.getMinutes() > 10 ? date.getMinutes() : '0' + date.getMinutes()}`;
+        timeElement.innerHTML = `${date.getHours()}:${date.getMinutes() >= 10 ? date.getMinutes() : '0' + date.getMinutes()}`;
         usernameElement.className = "username";
         usernameElement.innerHTML = username;
         messageElement.className = "message";
-        messageElement.innerHTML = message;
 
         trElement.appendChild(timeElement);
         trElement.appendChild(usernameElement);
@@ -80,13 +76,71 @@ export class ChatManager
         this.chatTable.tBodies[0].appendChild(rowSpacerElement);
     }
 
+    private OnMessage(data: PRIVMSG)
+    {
+        var messageContainer = document.createElement("td");
+
+        //#region Twitch emote parsing
+        var messageSplit: { message: string, src?: string }[] = [];
+        for (var i = 0, e = data.message.split(" "); i < e.length; i++) { messageSplit[i] = { message: e[i] }; }
+
+        data.emotes.forEach(emoteSet =>
+        {
+            emoteSet.positions.forEach(position =>
+            {
+                var arrayIndex = data.message.substring(0, position.start).split(" ").length - 1; //-1 because of the included "" field at the end
+                messageSplit[arrayIndex] =
+                {
+                    message: messageSplit[arrayIndex].message, //Cheap fix
+                    src: `https://static-cdn.jtvnw.net/emoticons/v1/${emoteSet.id}/1.0`
+                };
+            });
+        });
+
+        for (var i = 0, messageBuffer = ""; i < messageSplit.length; i++) //Reconstruct message
+        {
+            if (messageSplit[i].src == undefined) { messageBuffer += `${messageSplit[i].message} `; }
+            else
+            {
+                var span: HTMLSpanElement = document.createElement("span");
+                span.innerHTML = messageBuffer;
+                messageContainer.appendChild(span);
+
+                var img = document.createElement("img");
+                img.alt = messageSplit[i].message;
+                img.src = messageSplit[i].src!;
+                messageContainer.appendChild(img);
+
+                messageBuffer = " ";
+            }
+
+            if (i == messageSplit.length - 1 && messageSplit[i].src == undefined)
+            {
+                var span: HTMLSpanElement = document.createElement("span");
+                span.innerHTML = messageBuffer;
+                messageContainer.appendChild(span);
+            }
+        }
+        //#endregion
+
+        console.log(messageContainer);
+
+        this.UpdateChatTable(data.display_name, messageContainer);
+    }
+
     private MessageInputOnKeypress(data: KeyboardEvent)
     {
         data.preventDefault();
         if (data.key == "Enter")
         {
             this.twitchWS.eventDispatcher.dispatch("sendMessage", this.messageInput.value);
-            this.UpdateChatTable(this.twitchWS.GetUsername(), this.messageInput.value);
+
+            var messageElement = document.createElement("td");
+            var message = document.createElement("span");
+            message.innerHTML = this.messageInput.value;
+            messageElement.appendChild(message);
+            this.UpdateChatTable(this.twitchWS.GetUsername(), messageElement); //Fix for emote parsing
+
             this.messageInput.value = "";
         }
         else

@@ -58,9 +58,16 @@ table
     width: 150px;
 }
 
-.message
+/*Fix this when there is an emote in the message, the vertical alignment is slightly off*/
+.message > span
 {
     font-weight: normal;
+}
+
+.message > img
+{
+    /*height: 95%;*/ /*The height seems to be automatic based on the font size, makes things easier*/
+    vertical-align: middle !important;
 }
 
 #messageRow
@@ -101,18 +108,22 @@ table
     right: 0;
 }
 
-#messageRow > td > div > div > *
+#sendMessageButton
 {
     display: inline-block;
 }
 
 #volumePercent
 {
+    display: none;
     padding-right: 20px;
+    user-select: none;
+    cursor: pointer;
 }
 
 #volumeSlider
 {
+    display: none;
     transform: translate(-10px, -3.5px);
     -webkit-appearance: none;
     width: 150px;

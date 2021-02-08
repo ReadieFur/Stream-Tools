@@ -155,7 +155,24 @@
                 <td>
                     <div>
                         <table id="chatTable">
-                            <tbody></tbody>
+                            <tbody>
+                                <!--<tr>
+                                    <td class="time">22:14</td>
+                                    <td class="username">kof_readie</td>
+                                    <td class="message">
+                                        <span>a message</span>
+                                    </td>
+                                </tr>-->
+                                <!--<tr>
+                                    <td class="time">22:14</td>
+                                    <td class="username">kof_readie</td>
+                                    <td class="message">
+                                        <span>a message with an emote </span>
+                                        <img src="https://static-cdn.jtvnw.net/emoticons/v1/28/1.0">
+                                        <span> in the middle</span>
+                                    </td>
+                                </tr>-->
+                            </tbody>
                         </table>
                     </div>
                 </td>
