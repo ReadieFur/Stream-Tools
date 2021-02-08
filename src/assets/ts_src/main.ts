@@ -48,8 +48,12 @@ export class Main
         this.accountButton.addEventListener("click", () => { Main.ToggleMenu(this.accountButton, this.accountContainer); });
         window.addEventListener("message", (event) => //Add more checks here once the API login page has been rebuilt
         {
-            var data: {AccountWindowClose: boolean, LoginSuccessful?: boolean} = event.data;
-            if (data.AccountWindowClose) { Main.ToggleMenu(this.accountButton, this.accountContainer); }
+            var data: {AccountWindowClose: boolean, LoginSuccessful?: boolean} = event.data; //Reload page
+            if (data.AccountWindowClose)
+            {
+                if (data.LoginSuccessful) { this.settings = new Settings(); } //This will discard any settings made before the login but it will load the users cloud settings without reloading the page (or at least it should).
+                Main.ToggleMenu(this.accountButton, this.accountContainer);
+            }
         });
     }
 
