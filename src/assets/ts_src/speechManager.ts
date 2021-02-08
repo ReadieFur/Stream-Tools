@@ -13,6 +13,7 @@ export class SpeechManager
     private ttsPlayer!: HTMLAudioElement;
     private volumePercent!: HTMLParagraphElement;
     private volumeSlider!: HTMLInputElement;
+    private toggleMute: boolean = false;
     private polly: AWS.Polly;
     private speechParams: SpeechParams;
     private messagesToRead: string[];
@@ -46,10 +47,18 @@ export class SpeechManager
 
         this.ttsPlayer.addEventListener("ended", () => { this.PlayNextMessage(); });
         this.volumeSlider.addEventListener("input", (e) => { this.VolumeChangeEvent(e); });
+        this.volumePercent.addEventListener("click", () =>
+        {
+            this.toggleMute = !this.toggleMute;
+            var volume: number = this.toggleMute ? 0 : this.ttsPlayer.volume * 100;
+            this.volumeSlider.value = volume.toString();
+            this.volumePercent.innerHTML = `${volume}%`;
+        });
     }
 
     private VolumeChangeEvent(e: Event)
     {
+        this.toggleMute = false;
         var volume: number = Math.round(parseInt(this.volumeSlider.value));
         this.ttsPlayer.volume = volume / 100;
         this.volumePercent.innerHTML = `${volume}%`;
@@ -58,6 +67,9 @@ export class SpeechManager
     public ToggleTTS(data: boolean): void
     {
         this.ttsEnabled = data;
+        var displayMode: string = this.ttsEnabled ? 'inline-block' : 'none';
+        this.volumePercent.style.display = displayMode;
+        this.volumeSlider.style.display = displayMode;
     }
 
     public AWSCredentialsUpdated(data: { awsRegion: string, awsIdentityPoolID: string }): void
@@ -79,9 +91,12 @@ export class SpeechManager
         }
     }
 
+    //Add multi voice requests
     private SynthesizeSpeech(): void
     {
-        if (this.messagesToRead[0] != undefined) //I need to fix something here with the removal of messages as the list sometimes gives undefined
+        //I need to fix something here with the removal of messages as the list sometimes gives undefined
+        //Dont read messages if the volume is 0 or toggle muted (waste of char count quota)
+        if (this.messagesToRead[0] != undefined || !this.toggleMute || this.ttsPlayer.volume == 0)
         {
             var presigner: AWS.Polly.Presigner = new AWS.Polly.Presigner();
             this.speechParams.Text = this.messagesToRead[0];
