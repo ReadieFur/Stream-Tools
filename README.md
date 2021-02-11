@@ -13,13 +13,13 @@ Displays all of your Twitch chat with emotes (BTTV and FFZ emote parsing WIP). M
 <img src="./assets/chat.png" width="480">
 
 To setup the chat table you must log-in with your Twitch username and oAuth Token which you can obtain from Twitch's oAuth token generator [here](https://twitchapps.com/tmi/).  
-<video src="./assets/open%20settings.mp4" width="480" controls></video>
+<iframe src="https://readie.global-gaming.co/stream-tools/gitpage/assets/open%20settings.mp4" style="width: 480px; height: 270px; border: none;"></iframe>
 
 ### Text To Speech:
 **Please note:** currently in order to use this you must have an AWS account, you can read about how to get one [here](/AWS%20Setup.md).  
 To enable the text to speech go to Settings > Text To Speech.  
 Using AWS Polly I have implimented text to speech. The voice is currently limited to Brian's but in the future I will unlock other voices as well as WebSpeechAPI voices, so you dont need to go through the AWS setup if you don't want those voices.  
-<video src="./assets/tts.mp4" width="480" controls></video>
+<iframe src="https://readie.global-gaming.co/stream-tools/gitpage/assets/tts.mp4" style="width: 480px; height: 270px; border: none;"></iframe>
 
 The TTS also has text filters:
 | Method | Info |
@@ -42,4 +42,4 @@ I will add the option for the user to use their own activators in the future.
 | send [message] | Sends the spoken message to your twitch chat |
 | skip | Skips the current TTS message |
 
-<video src="./assets/vc.mp4" width="480" controls></video>
+<iframe src="https://readie.global-gaming.co/stream-tools/gitpage/assets/vc.mp4" style="width: 480px; height: 270px; border: none;"></iframe>
