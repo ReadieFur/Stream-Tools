@@ -192,6 +192,12 @@ input[type="text"]
     background-color: transparent;
 }
 
+input:disabled
+{
+    color: rgba(var(--foreground), 0.5);
+    border-bottom: 1px solid rgba(var(--foreground), 0.5) !important;
+}
+
 .settingsTabs p
 {
     margin-bottom: 2.5px;
@@ -211,7 +217,7 @@ input[type="text"]
 
 .settingsTabs button
 {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .link
@@ -220,7 +226,102 @@ input[type="text"]
     color: #00B5EE;
 }
 
+#ttsSettings
+{
+    height: 80%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 #ttsOptionsContainer
 {
     display: none;
+}
+
+#filtersEnabled > span > p
+{
+    margin-left: 10px;
+}
+
+#filterOptions
+{
+    display: none;
+}
+
+#filterOptions span > p
+{
+    margin-left: 10px;
+}
+
+#filterWordsInfo
+{
+    margin-left: 10px;
+}
+
+#filterWords
+{
+    margin-left: 10px;
+    width: 90%;
+    resize: vertical;
+    min-height: 60px;
+    height: max-content;
+    max-height: 150px;
+    font-weight: normal;
+    background-color: rgb(var(--background));
+    border: 1px solid rgb(var(--foreground));
+    border-radius: 7.5px;
+    outline: none;
+    outline-width: 0;
+}
+
+#vcSupportNotice
+{
+    display: none;
+}
+
+#vcContainer
+{
+    display: none;
+}
+
+#vcOptionsContainer
+{
+    display: none;
+}
+
+#inputDevices
+{
+    width: 300px;
+    height: 30px;
+    background-color: transparent;
+    margin-bottom: 15px;
+    font-weight: normal;
+    outline-width: 0;
+    border: 0;
+    border-bottom: 1px solid rgb(var(--foreground));
+    cursor: pointer;
+}
+
+#inputDevices > option
+{
+    font-weight: normal;
+    background-color: rgb(var(--background));
+}
+
+/*Modify for scrolling after a certain height and more custom css like accent hover colour*/
+#inputDevices > option:hover
+{
+    background-color: rgb(var(--main-accent));
+}
+
+#saveVCSettings
+{
+    /*margin: 0;*/ /*For when the dropdown is the item above the button*/
+}
+
+#inputPreview
+{
+    margin-top: 10px;
+    width: 300px;
+    height: 45px;
 }
