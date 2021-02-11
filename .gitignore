@@ -13,4 +13,4 @@ node_modules/
 #package.json
 pnpm-lock.yaml
 misc_data
-assets/
+assets/*.mp4
