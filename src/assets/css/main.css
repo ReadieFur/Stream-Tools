@@ -6,6 +6,11 @@
     }
 }
 
+html
+{
+    scroll-behavior: smooth;
+}
+
 :root
 {
     --main-accent: rgb(100, 0, 255);
@@ -52,6 +57,16 @@ body
 ::-webkit-scrollbar-thumb:hover
 {
     background: rgba(var(--foreground), 0.1);
+}
+
+.invertedScroll::-webkit-scrollbar-thumb
+{
+    background: rgb(var(--background));
+}
+
+.invertedScroll::-webkit-scrollbar-thumb:hover
+{
+    background: rgba(var(--foreground), 0.1); /*Odd how I needed to apply this again here*/
 }
 /*#endregion*/
 

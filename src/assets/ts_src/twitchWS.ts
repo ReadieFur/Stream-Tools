@@ -72,7 +72,6 @@ export class TwitchWS
         else if (data.includes("PRIVMSG")) //Need to check if a user sent the word 'PRIVMSG' to prevent this from breaking
         {
             this.eventDispatcher.dispatch("message", new PRIVMSG(data, this.username));
-            console.log(new PRIVMSG(data, this.username));
         }
     }
 
@@ -112,7 +111,8 @@ export class PRIVMSG
 
     constructor(_data: string, _username: string)
     {
-        var keyValueJoined: string[] = _data.replace(/=;/g, "=null;").split(";");
+        var _message = _data.split(`PRIVMSG #${_username} :`)[1]; //Data lost here: '${tag} #${this.username} :'.
+        var keyValueJoined: string[] = _data.replace(/=;/g, "=null;").split(";"); //This is a problem if the user puts a semicolon in their message, I need to find a better way of filtering these results.
         for (let i = 0; i < keyValueJoined.length; i++)
         {
             var keyValuePair: string[] = keyValueJoined[i].split("=");
@@ -176,7 +176,7 @@ export class PRIVMSG
                     this.id = keyValuePair[1];
                     break;
                 case "message":
-                    this.message = keyValuePair[1].split(`PRIVMSG #${_username} :`)[1]; //Data lost here: '${tag} #${this.username} :'
+                    this.message = _message;
                     break;
                 case "mod":
                     this.mod = parseInt(keyValuePair[1]);
