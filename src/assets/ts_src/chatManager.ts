@@ -9,6 +9,7 @@ export class ChatManager
 {
     public eventDispatcher: EventDispatcher;
 
+    private twitchWS: TwitchWS;
     private speechManager: SpeechManager;
     private volumeSlider!: HTMLInputElement;
     private volumePercent!: HTMLParagraphElement;
@@ -16,7 +17,6 @@ export class ChatManager
     private messageInput!: HTMLButtonElement;
     private chatTable!: HTMLTableElement;
 
-    private twitchWS: TwitchWS;
 
     constructor()
     {
@@ -26,13 +26,21 @@ export class ChatManager
 
         window.addEventListener("load", () => { this.WindowLoadEvent(); });
         this.twitchWS.eventDispatcher.addListener("join", (data: any) => { this.eventDispatcher.dispatch("join", data); });
-        this.twitchWS.eventDispatcher.addListener("message", (data: PRIVMSG) =>
+        this.twitchWS.eventDispatcher.addListener("message", (data: PRIVMSG) => //This event listner was being really weird so I moved the functions into the event listner here.
         {
             this.eventDispatcher.dispatch("message", data);
             this.OnMessage(data);
             this.speechManager.OnMessage(data);
         });
-        //this.eventDispatcher.addListener("message", (data: PRIVMSG) => {}); //This event listner was being really weird so I moved the functions into the event listner above.
+        this.speechManager.eventDispatcher.addListener("send", (data: string) =>
+        {
+            this.twitchWS.eventDispatcher.dispatch("sendMessage", data);
+            var messageElement = document.createElement("td");
+            var message = document.createElement("span");
+            message.innerHTML = data;
+            messageElement.appendChild(message);
+            this.UpdateChatTable(this.twitchWS.GetUsername(), messageElement);
+        });
     }
 
     private WindowLoadEvent(): void
@@ -50,11 +58,18 @@ export class ChatManager
     public UpdateTwitchCredentials(data: { oAuth: string, username: string }): void
     { this.twitchWS.Connect(data.oAuth, data.username); }
 
+    public ToggleVC(data: boolean) { this.speechManager.ToggleVC(data); }
+
     public ToggleTTS(data: boolean) { this.speechManager.ToggleTTS(data); }
 
-    public AWSCredentialsUpdated(data: any) { this.speechManager.AWSCredentialsUpdated(data); }
+    public UpdateOptions(data: any)
+    {
+        this.speechManager.UpdateOptions(data);
+    }
 
-    private UpdateChatTable(username: string, messageElement: HTMLTableDataCellElement) //Add emote support
+    //Add BTTV and FFZ emote support
+    //Add logging to the table (if enabled)
+    private UpdateChatTable(username: string, messageElement: HTMLTableDataCellElement)
     {
         var rowSpacerElement = document.createElement("tr");
         var trElement = document.createElement("tr");
@@ -64,7 +79,7 @@ export class ChatManager
         rowSpacerElement.className = "rowSpacer";
         var date = new Date();
         timeElement.className = "time";
-        timeElement.innerHTML = `${date.getHours()}:${date.getMinutes() >= 10 ? date.getMinutes() : '0' + date.getMinutes()}`;
+        timeElement.innerHTML = `${date.getHours() >= 10 ? date.getHours() : '0' + date.getHours()}:${date.getMinutes() >= 10 ? date.getMinutes() : '0' + date.getMinutes()}`;
         usernameElement.className = "username";
         usernameElement.innerHTML = username;
         messageElement.className = "message";
@@ -122,8 +137,6 @@ export class ChatManager
             }
         }
         //#endregion
-
-        console.log(messageContainer);
 
         this.UpdateChatTable(data.display_name, messageContainer);
     }
