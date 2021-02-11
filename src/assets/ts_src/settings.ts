@@ -1,7 +1,8 @@
 import { Main } from "./main";
 import { EventDispatcher } from "./eventDispatcher";
-import { mainModule } from "process";
+import { SpeechManagerOptions } from "./speechManager";
 
+//I should probably move my AJAX update POSTS to one function to save having to type the same thing over and over and instead passing over the data I want to send
 export class Settings
 {
     public eventDispatcher: EventDispatcher;
@@ -15,8 +16,6 @@ export class Settings
     private saveCredentials: boolean = false; //Cheap way to not update the databse on load, could also be used for local saves only
     private username?: string;
     private oAuth?: string;
-    private awsRegion?: string;
-    private awsIdentityPoolID?: string;
 
     constructor() //Load data
     {
@@ -34,13 +33,40 @@ export class Settings
 
         var _tabs: { [name: string]: string[] } =
         {
-            credentials: ["username", "oAuthToken", "updateCredentials", "credentialsAlert"],
-            tts: ["ttsEnabled", "ttsOptionsContainer", "awsRegion", "awsIdentityPoolID", "awsAlert", "updateAWSCredentials"],
-            //"vc": [],
+            credentials:
+            [
+                "username",
+                "oAuthToken",
+                "updateCredentials",
+                "credentialsAlert"
+            ],
+            tts:
+            [
+                "ttsEnabled",
+                "ttsOptionsContainer",
+                "awsRegion",
+                "awsIdentityPoolID",
+                "awsAlert",
+                "updateAWSCredentials",
+                "filtersEnabled",
+                "filterOptions",
+                "filterRemoveMessage",
+                "filterSkipMessage",
+                "filterWords"
+            ],
+            vc:
+            [
+                "vcSupportNotice",
+                "vcEnabled",
+                "vcOptionsContainer",
+                "inputDevices",
+                "saveVCSettings"/*,
+                "inputPreview"*/
+            ],
             other: [] //Dark theme handled by main.ts
         };
         this.tabs = {}; //Couldn't be bothered to keep re-writing the same lines again and again so I put it into this object
-        Object.keys(_tabs).forEach(key =>
+        Object.keys(_tabs).forEach((key: string) =>
         {
             this.tabs[key] =
             {
@@ -49,12 +75,15 @@ export class Settings
                 elements: {}
             };
 
-            _tabs[key].forEach(value =>
+            _tabs[key].forEach((value: string) =>
             {
                 this.tabs[key].elements[value] = Main.ThrowIfNullOrUndefined(this.tabs[key].tab.querySelector(`#${value}`));
-                //this.tabs[key].elements[value] = Main.ThrowIfNullOrUndefined(value.startsWith("#") ? this.tabs[key].tab.querySelector(value) : this.tabs[key].tab.querySelectorAll(value)); //Switch to this in the furure for class selection
+                //this.tabs[key].elements[value] = Main.ThrowIfNullOrUndefined(value.startsWith("#") ? this.tabs[key].tab.querySelector(value) : this.tabs[key].tab.querySelectorAll(value)); //Switch to this in the future for class selection
             });
         });
+
+        //Add content to tabs
+        this.IndexInputDevices();
 
         //Subscribe to events
         this.settingsButton.addEventListener("click", () => { Main.ToggleMenu(this.settingsButton, this.settingsContainer); });
@@ -64,9 +93,141 @@ export class Settings
 
         this.tabs.credentials.elements.updateCredentials.addEventListener("click", () => { this.UpdateCredentials(); });
         this.tabs.tts.elements.ttsEnabled.addEventListener("click", () => { this.ToggleTTS(true); })
-        this.tabs.tts.elements.updateAWSCredentials.addEventListener("click", () => { this.UpdateAWSCredentials(); })
+        this.tabs.tts.elements.updateAWSCredentials.addEventListener("click", () => { this.UpdateTTSOptions(); })
+        this.tabs.tts.elements.filtersEnabled.addEventListener("click", () => { this.ToggleTTSFilters(true); });
+        this.tabs.vc.elements.vcEnabled.addEventListener("click", () => { this.ToggleVC(true); }); //False while testing
+        this.tabs.vc.elements.saveVCSettings.addEventListener("click", () => { this.UpdateVCOptions(); });
+        //this.tabs.vc.elements.saveVCSettings.add
 
         this.LoadUserSettings();
+    }
+
+    private UpdateVCOptions()
+    {
+        var inputDevice: string = (<HTMLSelectElement>this.tabs.vc.elements.inputDevices).value;
+
+        this.GetInputDevice(inputDevice);
+        //navigator.mediaDevices.getUserMedia({ audio: { deviceId: inputDevice } });
+
+        /*jQuery.ajax(
+        {
+            url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+            method: "POST",
+            dataType: "json",
+            data:
+            {
+                "q": JSON.stringify(
+                {
+                    vcInputDevice: inputDevice,
+                    unid: Main.RetreiveCache("READIE-UI"),
+                    pass: Main.RetreiveCache("READIE-UP")
+                })
+            },
+            error: Main.ThrowAJAXJsonError,
+            success: (response: { result: any }) =>
+            {
+                if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
+            }
+        });*/
+    }
+
+    private IndexInputDevices()
+    {
+        navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) =>
+        {
+            devices = devices.filter((d: MediaDeviceInfo) => d.kind === "audioinput"); //Filter the list to only input devices
+            var defaultDevice: MediaDeviceInfo | null = null;
+            for (let i = 0; i < devices.length; i++) { if (devices[i].deviceId == "default") { defaultDevice = devices[i]; break; } } //Find default device
+            for (let i = 0; i < devices.length; i++) { if (devices[i].deviceId == "communications") { devices.splice(i, 1); break; } } //Remove communications device
+            if (defaultDevice !== null) //Remove the device that default is if the default device exists
+            {
+                var defaultDeviceName: string = defaultDevice.label.substr(10);
+                for (let i = 0; i < devices.length; i++)
+                {
+                    if (devices[i].label == defaultDeviceName)
+                    {
+                        devices.splice(i, 1); //I could also remove the default device and add the 'Deafult -' the the device label, in case the default device changes
+                        break;
+                    }
+                }
+            }
+
+            //Add a function to remove duplicate devices
+
+            this.tabs.vc.elements.inputDevices.innerHTML = ""; //Remove existing elements
+            //Add devices to the UI list
+            devices.forEach((device: MediaDeviceInfo) =>
+            {
+                var option: HTMLOptionElement = document.createElement("option");
+                option.value = device.deviceId;
+                //The device names do not show up in some browsers such as the OBS browser, if this happens, display the deviceId.
+                //In OBS's case you can add '--use-fake-ui-for-media-stream' to the launch parameters to fix this.
+                option.innerHTML = device.label != "" ? device.label : device.deviceId;
+                this.tabs.vc.elements.inputDevices.appendChild(option);
+                if (defaultDevice !== null && device.deviceId === defaultDevice.deviceId) { (<HTMLSelectElement>this.tabs.vc.elements.inputDevices).value = device.deviceId; }
+            });
+        });
+    }
+
+    private ToggleVC(save: boolean)
+    {
+        var input: HTMLInputElement = this.tabs.vc.elements.vcEnabled.querySelector("input")!;
+        input.checked = !input.checked;
+        if (input.checked)
+        {
+            this.tabs.vc.elements.vcOptionsContainer.style.display = "block";
+            this.GetInputDevice((<HTMLSelectElement>this.tabs.vc.elements.inputDevices).value);
+        }
+        else
+        {
+            this.tabs.vc.elements.vcOptionsContainer.style.display = "none";
+        }
+
+        this.eventDispatcher.dispatch("toggleVC", input.checked);
+
+        if (save)
+        {
+            jQuery.ajax(
+            {
+                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+                method: "POST",
+                dataType: "json",
+                data:
+                {
+                    "q": JSON.stringify(
+                    {
+                        stt_enabled: input.checked ? 1 : 0,
+                        unid: Main.RetreiveCache("READIE-UI"),
+                        pass: Main.RetreiveCache("READIE-UP")
+                    })
+                },
+                error: Main.ThrowAJAXJsonError,
+                success: (response: { result: any }) =>
+                {
+                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
+                }
+            });
+        }
+    }
+
+    private async GetInputDevice(_deviceId: string)
+    {
+        //There is a problem with OBS browser here where the page does not have access to the microphone but I AM able to stream its media to an audio element which is odd.
+        //This means that the SpeechRecogniser cannot work on OBS even though it has support for it.
+        //I have not found a way to allow access to the devices yet through CEF launch paramaters and since OBS has no user dialog to say allow/deny access I will, for now, have to disable the SpeechRecogniser function on OBS browser.
+
+        //When adding an audio preview the device can be changed from the browser search bar, when the device is changed in the webapp the one listed on the URL does not change so does the SpeechRecogniser still use the old device?
+        //Because of this, for now I will leave the audio preview disabled.
+        navigator.mediaDevices.getUserMedia({ audio: { deviceId: _deviceId } }).catch((err: any) =>
+        {
+            //This is currently checked by the speechRecognizer, I would like to check it here because in the future I many need to use other services that require the microphone.
+            //if (err == "NotAllowedError: Permission denied") { Main.Alert("Please give this page microphone access."); }
+        });
+
+        /*var microphonePermission: PermissionStatus = await navigator.permissions.query({name: 'microphone'});*/
+
+        /*var audioStream: MediaStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: _deviceId } });
+        (<HTMLAudioElement>this.tabs.vc.elements.inputPreview).srcObject = audioStream;*/
     }
 
     private ToggleTTS(save: boolean) //Getting messy again, need to tidy up
@@ -113,7 +274,23 @@ export class Settings
         }
     }
 
-    private UpdateAWSCredentials() //Look into what checks should be placed here
+    private ToggleTTSFilters(save: boolean)
+    {
+        var input: HTMLInputElement = this.tabs.tts.elements.filtersEnabled.querySelector("input")!;
+        input.checked = !input.checked;
+        if (input.checked)
+        {
+            this.tabs.tts.elements.filterOptions.style.display = "block";
+        }
+        else
+        {
+            this.tabs.tts.elements.filterOptions.style.display = "none";
+        }
+
+        if (save) { this.UpdateTTSOptions(); }
+    }
+
+    private UpdateTTSOptions() //Look into what checks should be placed here
     {
         this.saveCredentials = true;
         var valid: boolean = false;
@@ -128,10 +305,21 @@ export class Settings
 
         if (valid)
         {
-            this.awsRegion = _region;
-            this.awsIdentityPoolID = _identityPoolID;
+            var _filterMode: SpeechManagerOptions["filterMode"];
+            var filtersEnabled:HTMLInputElement = this.tabs.tts.elements.filtersEnabled.querySelector("input")!;
+            if (filtersEnabled.checked && (<HTMLInputElement>this.tabs.tts.elements.filterRemoveMessage).checked) { _filterMode = 1; }
+            else if (filtersEnabled.checked && (<HTMLInputElement>this.tabs.tts.elements.filterSkipMessage).checked) { _filterMode = 2; }
+            else { _filterMode = 0; }
 
-            this.eventDispatcher.dispatch("awsCredentialsUpdated", { awsRegion: _region, awsIdentityPoolID: _identityPoolID });
+            var options: SpeechManagerOptions =
+            {
+                awsRegion: _region,
+                awsIdentityPoolID: _identityPoolID,
+                filterMode: _filterMode,
+                filterWords: (<HTMLInputElement>this.tabs.tts.elements.filterWords).value //This could be a problem if the user has set filters and then the input becomes empty
+            };
+
+            this.eventDispatcher.dispatch("updateTTSOptions", options);
 
             jQuery.ajax(
             {
@@ -142,11 +330,7 @@ export class Settings
                 {
                     "q": JSON.stringify(
                     {
-                        update_aws:
-                        {
-                            awsRegion: _region,
-                            awsIdentityPoolID: _identityPoolID
-                        },
+                        update_tts: options,
                         unid: Main.RetreiveCache("READIE-UI"),
                         pass: Main.RetreiveCache("READIE-UP")
                     })
@@ -261,11 +445,39 @@ export class Settings
 
                     if (data.tts_mode == 1) { this.ToggleTTS(false); }
 
-                    if (data.aws_region != null && data.aws_identity_pool != null)
+                    if (data.aws_region != null && data.aws_identity_pool != null) //Change this for WebSpeechAPI
                     {
                         (<HTMLInputElement>this.tabs.tts.elements.awsRegion).value = data.aws_region;
                         (<HTMLInputElement>this.tabs.tts.elements.awsIdentityPoolID).value = data.aws_identity_pool;
-                        this.eventDispatcher.dispatch("awsCredentialsUpdated", { awsRegion: data.aws_region, awsIdentityPoolID: data.aws_identity_pool });
+
+                        this.eventDispatcher.dispatch("updateTTSOptions",
+                        {
+                            awsRegion: data.aws_region,
+                            awsIdentityPoolID: data.aws_identity_pool,
+                            filterMode: data.tts_filter_mode,
+                            filterWords: data.tts_filters
+                        });
+                    }
+
+                    if (data.tts_filter_mode != 0)
+                    {
+                        this.ToggleTTSFilters(false);
+                        switch(data.tts_filter_mode) //Made as a switch-case for if I add more options in the future
+                        {
+                            case 1:
+                                (<HTMLInputElement>this.tabs.tts.elements.filterRemoveMessage).checked = true;
+                                break;
+                            case 2:
+                                (<HTMLInputElement>this.tabs.tts.elements.filterSkipMessage).checked = true;
+                                break;
+                        }
+                    }
+                    (<HTMLInputElement>this.tabs.tts.elements.filterWords).value = data.tts_filters;
+
+                    if (data.stt_enabled == 1)
+                    {
+                        //Use the value from speechManager.ts in the future. This is a quick fix temporary for this.
+                        if (!("obsstudio" in window) && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) { this.ToggleVC(false); }
                     }
                 }
                 else { console.log("No user data found"); }
@@ -286,12 +498,12 @@ type StreamChatDB =
     unid: string,
     twitch_username: string | null,
     twitch_oauth: string | null,
-    tts_mode: number,
+    tts_mode: 0 | 1 | 2, //Off, AWS, WebSpeechAPI
     tts_voice: string | null,
-    tts_filters_enabled: boolean,
-    tts_filters: string[] | null,
+    tts_filter_mode: 0 | 1 | 2, //Off, Remove, Skip
+    tts_filters: string,
     aws_region: string | null,
     aws_identity_pool: string,
-    stt_enabled: boolean,
+    stt_enabled: 0 | 1,
     stt_listeners: string | null
 }

@@ -5,7 +5,7 @@ import { ChatManager } from "./chatManager";
 
 declare var WEB_ROOT: string;
 
-//I may need to configure webpack for this to compile nicely with the AWS scripts
+//For OBS browser support I couldn't do 'object?' so I had to do '!==null/undefined'
 export class Main
 {
     public static WEB_ROOT: string;
@@ -18,7 +18,7 @@ export class Main
 
     constructor()
     {
-        //new TestClass(); /*REMEMBER TO COMMENT THIS OUT FOR RELEASE*/
+        //new TestClass(); /*REMEMBER TO COMMENT THIS OUT WHEN MAKING A RELEASE*/
 
         Main.WEB_ROOT = WEB_ROOT;
         new HeaderSlide();
@@ -28,11 +28,13 @@ export class Main
         window.addEventListener("load", this.WindowLoadEvent);
         window.addEventListener("DOMContentLoaded", this.DOMContentLoadedEvent);
 
+        //I need to find a better way of passing this data accross, though it is still fully OOB
         this.chatManager.eventDispatcher.addListener("join", (data: any) => { this.settings.OnJoin(data); });
         this.settings.eventDispatcher.addListener("showLoginMenu", () => { Main.ToggleMenu(this.accountButton, this.accountContainer); });
         this.settings.eventDispatcher.addListener("twitchCredentialsUpdated", (data: any) => { this.chatManager.UpdateTwitchCredentials(data); });
         this.settings.eventDispatcher.addListener("toggleTTS", (data: boolean) => { this.chatManager.ToggleTTS(data); });
-        this.settings.eventDispatcher.addListener("awsCredentialsUpdated", (data: any) => { this.chatManager.AWSCredentialsUpdated(data); });
+        this.settings.eventDispatcher.addListener("updateTTSOptions", (data: any) => { this.chatManager.UpdateOptions(data); });
+        this.settings.eventDispatcher.addListener("toggleVC", (data: any) => { this.chatManager.ToggleVC(data); });
     }
 
     private WindowLoadEvent(): void
@@ -51,7 +53,8 @@ export class Main
             var data: {AccountWindowClose: boolean, LoginSuccessful?: boolean} = event.data; //Reload page
             if (data.AccountWindowClose)
             {
-                if (data.LoginSuccessful) { this.settings = new Settings(); } //This will discard any settings made before the login but it will load the users cloud settings without reloading the page (or at least it should).
+                //if (data.LoginSuccessful) { this.settings = new Settings(); } //This will discard any settings made before the login but it will load the users cloud settings without reloading the page (or at least it should).
+                if (data.LoginSuccessful) { window.location.reload(); }
                 Main.ToggleMenu(this.accountButton, this.accountContainer);
             }
         });
@@ -140,6 +143,8 @@ export class Main
     public static Alert(message: string)
     {
         //Alert box popup
+        //TMP
+        window.alert(message);
     }
 }
 new Main();
