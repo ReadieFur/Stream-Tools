@@ -1,4 +1,4 @@
-Stream-Tools
+# Stream-Tools
 ### A stream chat tool that features AWS text to speech, voice commands, chat filters and more! Check it out [here](http://readie.global-gaming.co/stream-tools/)!
 
 ## Please Note:
