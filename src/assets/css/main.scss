@@ -13,20 +13,20 @@ html
 
 :root
 {
-    --main-accent: rgb(100, 0, 255);
+    --main-accent: rgba(100, 0, 255, 1);
 }
 
 *
 {
     font-family: "Montserrat", sans-serif;
     font-weight: bold;
-    color: rgb(var(--foreground));
+    color: rgba(var(--foreground), 1);
 }
 
 /*#region Body*/
 body
 {
-    background: rgb(var(--background));
+    background: rgba(var(--background), 1);
     margin: 0;
     overflow-x: hidden;
     /*min-height: 100vh;*/
@@ -50,7 +50,7 @@ body
 
 ::-webkit-scrollbar-thumb
 {
-    background: rgb(var(--backgroundAlt));
+    background: rgba(var(--backgroundAlt), 1);
     border-radius: 4px
 }
 
@@ -61,7 +61,7 @@ body
 
 .invertedScroll::-webkit-scrollbar-thumb
 {
-    background: rgb(var(--background));
+    background: rgba(var(--background), 1);
 }
 
 .invertedScroll::-webkit-scrollbar-thumb:hover
@@ -187,14 +187,14 @@ button
     transition: ease .4s;
     transition-property: background-color;
     border-style: none;
-    color: rgb(var(--foreground));
+    color: rgba(var(--foreground), 1);
     padding: 10px 15px;
     border-radius: 4px;
     font-weight: bold;
     text-transform: uppercase;
     font-size: medium;
     /*background-color: #2f3541;*/
-    background-color: rgb(var(--backgroundAlt));
+    background-color: rgba(var(--backgroundAlt), 1);
 }
 
 button:hover
@@ -206,16 +206,16 @@ button:hover
 
 .hollowButton
 {
-    border: 2.5px solid rgb(var(--foreground));
+    border: 2.5px solid rgba(var(--foreground), 1);
     background-color: transparent;
-    color: rgb(var(--foreground));
+    color: rgba(var(--foreground), 1);
 }
 
 .hollowButton:hover,
 .hollowButton.hover
 {
-    background-color: rgb(var(--foreground));
-    color: rgb(var(--background));
+    background-color: rgba(var(--foreground), 1);
+    color: rgba(var(--background), 1);
 }
 /*#endregion*/
 
@@ -223,7 +223,7 @@ button:hover
 hr
 {
     border: none;
-    border-bottom: 1px solid rgb(var(--foreground));
+    border-bottom: 1px solid rgba(var(--foreground), 1);
 }
 
 .center

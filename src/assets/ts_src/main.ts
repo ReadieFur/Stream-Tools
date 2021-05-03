@@ -14,7 +14,11 @@ export class Main
     private chatManager: ChatManager;
 
     private accountButton!: HTMLLinkElement;
-    private accountContainer!: HTMLIFrameElement;
+    
+    public static accountContainer: HTMLIFrameElement;
+    private static alertBoxContainer: HTMLDivElement;
+    private static alertBoxText: HTMLParagraphElement;
+    private static alertBoxTextBox: HTMLInputElement;
 
     constructor()
     {
@@ -27,14 +31,96 @@ export class Main
 
         window.addEventListener("load", this.WindowLoadEvent);
         window.addEventListener("DOMContentLoaded", this.DOMContentLoadedEvent);
+        window.addEventListener("message", (ev) => { this.WindowMessageEvent(ev); });
 
         //I need to find a better way of passing this data accross, though it is still fully OOB
         this.chatManager.eventDispatcher.addListener("join", (data: any) => { this.settings.OnJoin(data); });
-        this.settings.eventDispatcher.addListener("showLoginMenu", () => { Main.ToggleMenu(this.accountButton, this.accountContainer); });
+        this.settings.eventDispatcher.addListener("showLoginMenu", () => { Main.AccountMenuToggle(true); });
         this.settings.eventDispatcher.addListener("twitchCredentialsUpdated", (data: any) => { this.chatManager.UpdateTwitchCredentials(data); });
         this.settings.eventDispatcher.addListener("toggleTTS", (data: boolean) => { this.chatManager.ToggleTTS(data); });
         this.settings.eventDispatcher.addListener("updateTTSOptions", (data: any) => { this.chatManager.UpdateOptions(data); });
         this.settings.eventDispatcher.addListener("toggleVC", (data: any) => { this.chatManager.ToggleVC(data); });
+    }
+
+    private WindowMessageEvent(ev: MessageEvent<any>): void
+    {
+        var host = window.location.host.split('.');
+        if (ev.origin.split('/')[2] == `api-readie.global-gaming.${host[host.length - 1]}`)
+        {
+            if (Main.TypeOfReturnData(ev.data))
+            {
+                /*if (ev.data.error)
+                {
+                    console.error(ev);
+                    Main.AccountMenuToggle(false);
+                }
+                else if (typeof(ev.data.data) === "string")
+                {
+                    switch (ev.data.data)
+                    {
+                        case "BACKGROUND_CLICK":
+                            Main.AccountMenuToggle(false);
+                            break;
+                        case "LOGGED_IN":
+                            Main.AccountMenuToggle(false);
+                            break;
+                        case "LOGGED_OUT":
+                            window.location.reload();
+                            break;
+                        case "ACCOUNT_DELETED":
+                            window.location.reload();
+                            break;
+                        default:
+                            //Not implemented.
+                            break;
+                    }
+                }
+                else
+                {
+                    //Alert unknown error/response.
+                    console.log("Unknown response: ", ev);
+                    Main.AccountMenuToggle(false);
+                }*/
+
+                switch (ev.data.data)
+                {
+                    case "BACKGROUND_CLICK":
+                        Main.AccountMenuToggle(false);
+                        break;
+                    case "LOGGED_IN":
+                        Main.AccountMenuToggle(false);
+                        break;
+                    case "LOGGED_OUT":
+                        window.location.reload();
+                        break;
+                    case "ACCOUNT_DELETED":
+                        window.location.reload();
+                        break;
+                    default:
+                        //Not implemented.
+                        break;
+                }
+            }
+            else
+            {
+                //Alert unknown error/response.
+                console.log("Unknown response: ", ev);
+                Main.AccountMenuToggle(false);
+            }
+        }
+    }
+
+    public static AccountMenuToggle(show: boolean)
+    {
+        if (show) { if (Main.accountContainer.contentWindow != null) { Main.accountContainer.contentWindow.postMessage("UPDATE_THEME", "*"); } Main.accountContainer.style.display = "block"; }
+        Main.accountContainer.classList.remove(show ? "fadeOut" : "fadeIn");
+        Main.accountContainer.classList.add(show ? "fadeIn" : "fadeOut");
+        if (!show) { setTimeout(() => { Main.accountContainer.style.display = "none"; }, 399); }
+    }
+
+    public static TypeOfReturnData(data: any): data is ReturnData
+    {
+        return (data as ReturnData).error !== undefined && (data as ReturnData).data !== undefined;
     }
 
     private WindowLoadEvent(): void
@@ -43,11 +129,14 @@ export class Main
         staticStyles.innerHTML = `* { transition: background-color ease 100ms; }`;
         document.head.appendChild(staticStyles);
 
+        Main.alertBoxContainer = Main.ThrowIfNullOrUndefined(document.querySelector("#alertBoxContainer"));
+        Main.alertBoxText = Main.ThrowIfNullOrUndefined(document.querySelector("#alerBoxText"));
+        Main.alertBoxTextBox = Main.ThrowIfNullOrUndefined(document.querySelector("#alertBoxTextBox"));
+        Main.alertBoxContainer.addEventListener("click", () => { Main.alertBoxContainer.style.display = "none"; });
+
         this.accountButton = Main.ThrowIfNullOrUndefined(document.querySelector("#accountButton"));
-        this.accountContainer = Main.ThrowIfNullOrUndefined(document.querySelector("#account"));
         var hostSplit = window.location.host.split("."); //Just for localhost testing
-        this.accountContainer.src = `//api-readie.global-gaming.${hostSplit[hostSplit.length - 1]}/account/`; //This should always be https but for localhost testing I did not have a vertificate for https testing
-        this.accountButton.addEventListener("click", () => { Main.ToggleMenu(this.accountButton, this.accountContainer); });
+        this.accountButton.addEventListener("click", () => { Main.AccountMenuToggle(true); });
         window.addEventListener("message", (event) => //Add more checks here once the API login page has been rebuilt
         {
             var data: {AccountWindowClose: boolean, LoginSuccessful?: boolean} = event.data; //Reload page
@@ -55,7 +144,7 @@ export class Main
             {
                 //if (data.LoginSuccessful) { this.settings = new Settings(); } //This will discard any settings made before the login but it will load the users cloud settings without reloading the page (or at least it should).
                 if (data.LoginSuccessful) { window.location.reload(); }
-                Main.ToggleMenu(this.accountButton, this.accountContainer);
+                Main.AccountMenuToggle(true);
             }
         });
     }
@@ -140,11 +229,82 @@ export class Main
         }
     }
 
-    public static Alert(message: string)
+    //This is asyncronous as I will check if the user has dismissed the alert box in the future.
+    public static async Alert(message: string): Promise<void>
     {
-        //Alert box popup
-        //TMP
-        window.alert(message);
+        if (Main.alertBoxTextBox != null && Main.alertBoxText != null && Main.alertBoxContainer != null)
+        {
+            console.log("Alert:", message);
+            Main.alertBoxTextBox.focus();
+            Main.alertBoxText.innerHTML = message;
+            Main.alertBoxContainer.style.display = "block";
+        }
+    }
+
+    public static Sleep(milliseconds: number): Promise<unknown>
+    {
+        return new Promise(r => setTimeout(r, milliseconds));
+    }
+
+    public static GetPHPErrorMessage(error: any): string
+    {
+        switch (error)
+        {
+            case "NO_QUERY_FOUND":
+                return "No query found.";
+            case "NO_METHOD_FOUND":
+                return "No method found.";
+            case "NO_DATA_FOUND":
+                return "No data found.";
+            case "INVALID_METHOD":
+                return "Invalid method.";
+            case "INVALID_DATA":
+                return "Invalid data.";
+            case "ACCOUNT_NOT_FOUND":
+                return "Account not found.";
+            case "ACCOUNT_NOT_VERIFIED":
+                return "Account not verified.";
+            case "ACCOUNT_ALREADY_EXISTS":
+                return "Account already exists.";
+            case "ENCRYPTION_ERROR":
+                return "Encryption error.";
+            case "SET_COOKIE_ERROR":
+                return "Set cookie error.";
+            case "GET_COOKIE_ERROR":
+                return "Get cookie error.";
+            case "COOKIE_NOT_FOUND":
+                return "Cookie not found.";
+            case "SESSION_INVALID":
+                return "Session invalid.";
+            case "INVALID_CREDENTIALS":
+                return "Invalid credentials.";
+            case "INVALID_UID":
+                return "Invalid user ID.";
+            case "INVALID_EMAIL":
+                return "Invalid email.";
+            case "INVALID_USERNAME":
+                return "Invalid username.";
+            case "INVALID_PASSWORD":
+                return "Invalid password.";
+            case "INVALID_OTP":
+                return "Invalid OTP.";
+            case "VERIFICATION_FAILED":
+                return "Verification failed.";
+            case "MAIL_ERROR":
+                return "Mail error."
+            case "NO_RESULTS":
+                return "No results found.";
+            case "NOT_LOGGED_IN":
+                return "Not logged in.";
+            default:
+                return `Unknown error.<br><small>${String(error)}</small>`;
+        }
     }
 }
 new Main();
+
+export interface ReturnData
+{
+error: boolean,
+data: any
+}

@@ -102,6 +102,34 @@ export class Settings
         this.LoadUserSettings();
     }
 
+    private static SettingsPHP(params:
+    {
+        method: "stt_enabled" | "ttsMode" | "update_tts" | "update_twitch" | "get_all",
+        data?: object
+        success?: (response: ReturnData) => any
+        error?: (ex: any) => any
+        async?: boolean
+    })
+    {
+        return jQuery.ajax(
+        {
+            async: params.async??true,
+            url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+            method: "POST",
+            dataType: "json",
+            data:
+            {
+                "q": JSON.stringify(
+                {
+                    method: params.method,
+                    data: params.data??{}
+                })
+            },
+            error: params.error??Main.ThrowAJAXJsonError,
+            success: params.success??((response) => { if (response.error) { Main.Alert(Main.GetPHPErrorMessage(response.data)); console.error(response); } })
+        });
+    }
+
     private UpdateVCOptions()
     {
         var inputDevice: string = (<HTMLSelectElement>this.tabs.vc.elements.inputDevices).value;
@@ -187,24 +215,12 @@ export class Settings
 
         if (save)
         {
-            jQuery.ajax(
+            Settings.SettingsPHP(
             {
-                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
-                method: "POST",
-                dataType: "json",
+                method: "stt_enabled",
                 data:
                 {
-                    "q": JSON.stringify(
-                    {
-                        stt_enabled: input.checked ? 1 : 0,
-                        unid: Main.RetreiveCache("READIE-UI"),
-                        pass: Main.RetreiveCache("READIE-UP")
-                    })
-                },
-                error: Main.ThrowAJAXJsonError,
-                success: (response: { result: any }) =>
-                {
-                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
+                    stt_enabled: input.checked ? 1 : 0
                 }
             });
         }
@@ -251,24 +267,12 @@ export class Settings
 
         if (save)
         {
-            jQuery.ajax(
+            Settings.SettingsPHP(
             {
-                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
-                method: "POST",
-                dataType: "json",
+                method: "ttsMode",
                 data:
                 {
-                    "q": JSON.stringify(
-                    {
-                        ttsMode: ttsMode,
-                        unid: Main.RetreiveCache("READIE-UI"),
-                        pass: Main.RetreiveCache("READIE-UP")
-                    })
-                },
-                error: Main.ThrowAJAXJsonError,
-                success: (response: { result: any }) =>
-                {
-                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
+                    ttsMode: ttsMode
                 }
             });
         }
@@ -321,24 +325,12 @@ export class Settings
 
             this.eventDispatcher.dispatch("updateTTSOptions", options);
 
-            jQuery.ajax(
+            Settings.SettingsPHP(
             {
-                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
-                method: "POST",
-                dataType: "json",
+                method: "update_tts",
                 data:
                 {
-                    "q": JSON.stringify(
-                    {
-                        update_tts: options,
-                        unid: Main.RetreiveCache("READIE-UI"),
-                        pass: Main.RetreiveCache("READIE-UP")
-                    })
-                },
-                error: Main.ThrowAJAXJsonError,
-                success: (response: { result: any }) =>
-                {
-                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
+                    update_tts: options
                 }
             });
         }
@@ -386,28 +378,13 @@ export class Settings
         setTimeout(() => { this.tabs.credentials.elements.credentialsAlert.innerText = ""; }, 2500);
         if (this.saveCredentials)
         {
-            jQuery.ajax(
+            Settings.SettingsPHP(
             {
-                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
-                method: "POST",
-                dataType: "json",
+                method: "update_twitch",
                 data:
                 {
-                    "q": JSON.stringify(
-                    {
-                        update_twitch:
-                        {
-                            twitch_username: this.username,
-                            twitch_oauth: this.oAuth
-                        },
-                        unid: Main.RetreiveCache("READIE-UI"),
-                        pass: Main.RetreiveCache("READIE-UP")
-                    })
-                },
-                error: Main.ThrowAJAXJsonError,
-                success: (response: { result: any }) => //I don't need to check for the data type here as jQuery will try to steralise the JSON, if it fails then the error function will run
-                {
-                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
+                    twitch_username: this.username,
+                    twitch_oauth: this.oAuth
                 }
             });
         }
@@ -415,22 +392,10 @@ export class Settings
 
     private LoadUserSettings()
     {
-        jQuery.ajax(
+        Settings.SettingsPHP(
         {
-            url: `${Main.WEB_ROOT}/assets/php/settings.php`,
-            method: "POST",
-            dataType: "json",
-            data:
-            {
-                "q": JSON.stringify(
-                {
-                    get_all: "",
-                    unid: Main.RetreiveCache("READIE-UI"),
-                    pass: Main.RetreiveCache("READIE-UP")
-                })
-            },
-            error: Main.ThrowAJAXJsonError,
-            success: (response: { result: any }) =>
+            method: "get_all",
+            success: (response) =>
             {
                 var data: StreamChatDB;
                 if ((response.result as StreamChatDB) != null)
@@ -495,7 +460,7 @@ type RadioTab =
 
 type StreamChatDB =
 {
-    unid: string,
+    uid: string,
     twitch_username: string | null,
     twitch_oauth: string | null,
     tts_mode: 0 | 1 | 2, //Off, AWS, WebSpeechAPI
@@ -505,5 +470,12 @@ type StreamChatDB =
     aws_region: string | null,
     aws_identity_pool: string,
     stt_enabled: 0 | 1,
-    stt_listeners: string | null
+    stt_listeners: string | null,
+    dateAltered: string
+}
+
+export interface ReturnData
+{
+    error: boolean,
+    data: any
 }
