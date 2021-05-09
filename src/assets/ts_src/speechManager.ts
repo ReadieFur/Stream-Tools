@@ -1,7 +1,7 @@
-import { EventDispatcher } from "./eventDispatcher";
-import { Main } from "./main";
+import { EventDispatcher } from "./eventDispatcher.js";
+import { Main } from "./main.js";
 import AWS from "aws-sdk";
-import { PRIVMSG } from "./twitchWS";
+import { PRIVMSG } from "./twitchWS.js";
 
 declare var webkitSpeechRecognition: { new(): SpeechRecognition; } //Speech recognition name for Chrome
 

@@ -1,7 +1,7 @@
-import { TestClass } from "./testClass";
-import { HeaderSlide } from "./headerSlide";
-import { Settings } from "./settings";
-import { ChatManager } from "./chatManager";
+import { TestClass } from "./testClass.js";
+import { HeaderSlide } from "./headerSlide.js";
+import { Settings } from "./settings.js";
+import { ChatManager } from "./chatManager.js";
 
 declare var WEB_ROOT: string;
 

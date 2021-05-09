@@ -1,6 +1,6 @@
-import { Main } from "./main";
-import { EventDispatcher } from "./eventDispatcher";
-import { SpeechManagerOptions } from "./speechManager";
+import { Main } from "./main.js";
+import { EventDispatcher } from "./eventDispatcher.js";
+import { SpeechManagerOptions } from "./speechManager.js";
 
 //I should probably move my AJAX update POSTS to one function to save having to type the same thing over and over and instead passing over the data I want to send
 export class Settings
