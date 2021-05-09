@@ -1,7 +1,7 @@
-import { TestClass } from "./testClass.js";
-import { HeaderSlide } from "./headerSlide.js";
-import { Settings } from "./settings.js";
-import { ChatManager } from "./chatManager.js";
+import { TestClass } from "./testClass";
+import { HeaderSlide } from "./headerSlide";
+import { Settings } from "./settings";
+import { ChatManager } from "./chatManager";
 
 declare var WEB_ROOT: string;
 
@@ -29,8 +29,8 @@ export class Main
         this.chatManager = new ChatManager();
         this.settings = new Settings(); //Settings should load last
 
-        window.addEventListener("load", this.WindowLoadEvent);
-        window.addEventListener("DOMContentLoaded", this.DOMContentLoadedEvent);
+        window.addEventListener("load", () => { this.WindowLoadEvent(); });
+        window.addEventListener("DOMContentLoaded", () => { this.DOMContentLoadedEvent(); });
         window.addEventListener("message", (ev) => { this.WindowMessageEvent(ev); });
 
         //I need to find a better way of passing this data accross, though it is still fully OOB
@@ -88,7 +88,8 @@ export class Main
                         Main.AccountMenuToggle(false);
                         break;
                     case "LOGGED_IN":
-                        Main.AccountMenuToggle(false);
+                        //Main.AccountMenuToggle(false);
+                        window.location.reload();
                         break;
                     case "LOGGED_OUT":
                         window.location.reload();
@@ -129,6 +130,7 @@ export class Main
         staticStyles.innerHTML = `* { transition: background-color ease 100ms; }`;
         document.head.appendChild(staticStyles);
 
+        Main.accountContainer = Main.ThrowIfNullOrUndefined(document.querySelector("#accountContainer"));
         Main.alertBoxContainer = Main.ThrowIfNullOrUndefined(document.querySelector("#alertBoxContainer"));
         Main.alertBoxText = Main.ThrowIfNullOrUndefined(document.querySelector("#alerBoxText"));
         Main.alertBoxTextBox = Main.ThrowIfNullOrUndefined(document.querySelector("#alertBoxTextBox"));
@@ -151,13 +153,15 @@ export class Main
 
     private DOMContentLoadedEvent(): void //Update this
     {
-        if (Main.RetreiveCache("READIE-DARK") != "false") { Main.DarkTheme(true); }
+        if (Main.RetreiveCache("READIE_DARK") != "false") { Main.DarkTheme(true); }
         else { Main.DarkTheme(false); }
-        document.querySelector("#darkMode")!.addEventListener("click", () =>
+        Main.ThrowIfNullOrUndefined(document.querySelector("#darkMode")).addEventListener("click", () =>
         {
-            var cachedValue = Main.RetreiveCache("READIE-DARK");
-            if (cachedValue == undefined || cachedValue == "false") { Main.DarkTheme(true); }
-            else { Main.DarkTheme(false); }
+            var cachedValue = Main.RetreiveCache("READIE_DARK");
+            Main.DarkTheme(cachedValue == "false" ? true : false);
+            //CBA to do the dynamic url thing I normally do, nothing sensitive is being sent over anyway.
+            if (Main.accountContainer.contentWindow != null)
+            { Main.accountContainer.contentWindow.postMessage("UPDATE_THEME", "*" /*Main.accountContainer.contentWindow?.location.href*/ /*Main.accountContainer.src*/); }
         });
     }
 
@@ -169,7 +173,7 @@ export class Main
 
     public static DarkTheme(dark: boolean): void
     {
-        Main.SetCache("READIE-DARK", dark ? "true" : "false", 365);
+        Main.SetCache("READIE_DARK", dark ? "true" : "false", 365);
         var darkButton: HTMLInputElement | null = document.querySelector("#darkMode > input");
         var themeColours: HTMLStyleElement | null = document.querySelector("#themeColours");
         if (dark) { darkButton!.checked = true; }
@@ -197,12 +201,12 @@ export class Main
         return "";
     }
 
-    public static SetCache(cookie_name: string, value: string, time: number, path: string = '/'): void
+    public static SetCache(cookie_name: string, value: string, hours: number, path: string = '/'): void
     {
-        var hostSplit = window.location.host.split("."); //Just for localhost testing
-        var domain = `readie.global-gaming.${hostSplit[hostSplit.length - 1]}`; 
+        var hostSplit = window.location.host.split(".");
+        var domain = `.${hostSplit[hostSplit.length - 2]}.${hostSplit[hostSplit.length - 1]}`;
         var expDate = new Date();
-        expDate.setDate(expDate.getDate() + time);
+        expDate.setTime(expDate.getTime() + (hours*60*60*1000));
         document.cookie = `${cookie_name}=${value}; expires=${expDate.toUTCString()}; path=${path}; domain=${domain};`;
     }
 

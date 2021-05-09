@@ -1,7 +1,7 @@
-import { EventDispatcher } from "./eventDispatcher.js";
-import { Main } from "./main"
-import { TwitchWS, PRIVMSG } from "./twitchWS.js";
-import { SpeechManager } from "./speechManager.js";
+import { Main } from "./main";
+import { EventDispatcher } from "./eventDispatcher";
+import { TwitchWS, PRIVMSG } from "./twitchWS";
+import { SpeechManager } from "./speechManager";
 
 //I will be implementing filters and spam detection as settings that can be configured by the user at some point.
 //This will also help cut down on the AWS Polly character quota if the user has this option enabled.

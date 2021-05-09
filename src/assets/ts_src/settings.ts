@@ -1,6 +1,6 @@
-import { Main } from "./main.js";
-import { EventDispatcher } from "./eventDispatcher.js";
-import { SpeechManagerOptions } from "./speechManager.js";
+import { Main } from "./main";
+import { EventDispatcher } from "./eventDispatcher";
+import { SpeechManagerOptions } from "./speechManager";
 
 //I should probably move my AJAX update POSTS to one function to save having to type the same thing over and over and instead passing over the data I want to send
 export class Settings
@@ -102,34 +102,6 @@ export class Settings
         this.LoadUserSettings();
     }
 
-    private static SettingsPHP(params:
-    {
-        method: "stt_enabled" | "ttsMode" | "update_tts" | "update_twitch" | "get_all",
-        data?: object
-        success?: (response: ReturnData) => any
-        error?: (ex: any) => any
-        async?: boolean
-    })
-    {
-        return jQuery.ajax(
-        {
-            async: params.async??true,
-            url: `${Main.WEB_ROOT}/assets/php/settings.php`,
-            method: "POST",
-            dataType: "json",
-            data:
-            {
-                "q": JSON.stringify(
-                {
-                    method: params.method,
-                    data: params.data??{}
-                })
-            },
-            error: params.error??Main.ThrowAJAXJsonError,
-            success: params.success??((response) => { if (response.error) { Main.Alert(Main.GetPHPErrorMessage(response.data)); console.error(response); } })
-        });
-    }
-
     private UpdateVCOptions()
     {
         var inputDevice: string = (<HTMLSelectElement>this.tabs.vc.elements.inputDevices).value;
@@ -146,9 +118,7 @@ export class Settings
             {
                 "q": JSON.stringify(
                 {
-                    vcInputDevice: inputDevice,
-                    unid: Main.RetreiveCache("READIE-UI"),
-                    pass: Main.RetreiveCache("READIE-UP")
+                    vcInputDevice: inputDevice
                 })
             },
             error: Main.ThrowAJAXJsonError,
@@ -215,12 +185,22 @@ export class Settings
 
         if (save)
         {
-            Settings.SettingsPHP(
+            jQuery.ajax(
             {
-                method: "stt_enabled",
+                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+                method: "POST",
+                dataType: "json",
                 data:
                 {
-                    stt_enabled: input.checked ? 1 : 0
+                    "q": JSON.stringify(
+                    {
+                        stt_enabled: input.checked ? 1 : 0
+                    })
+                },
+                error: Main.ThrowAJAXJsonError,
+                success: (response: { result: any }) =>
+                {
+                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
                 }
             });
         }
@@ -267,12 +247,22 @@ export class Settings
 
         if (save)
         {
-            Settings.SettingsPHP(
+            jQuery.ajax(
             {
-                method: "ttsMode",
+                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+                method: "POST",
+                dataType: "json",
                 data:
                 {
-                    ttsMode: ttsMode
+                    "q": JSON.stringify(
+                    {
+                        ttsMode: ttsMode
+                    })
+                },
+                error: Main.ThrowAJAXJsonError,
+                success: (response: { result: any }) =>
+                {
+                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
                 }
             });
         }
@@ -325,12 +315,22 @@ export class Settings
 
             this.eventDispatcher.dispatch("updateTTSOptions", options);
 
-            Settings.SettingsPHP(
+            jQuery.ajax(
             {
-                method: "update_tts",
+                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+                method: "POST",
+                dataType: "json",
                 data:
                 {
-                    update_tts: options
+                    "q": JSON.stringify(
+                    {
+                        update_tts: options
+                    })
+                },
+                error: Main.ThrowAJAXJsonError,
+                success: (response: { result: any }) =>
+                {
+                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
                 }
             });
         }
@@ -378,13 +378,26 @@ export class Settings
         setTimeout(() => { this.tabs.credentials.elements.credentialsAlert.innerText = ""; }, 2500);
         if (this.saveCredentials)
         {
-            Settings.SettingsPHP(
+            jQuery.ajax(
             {
-                method: "update_twitch",
+                url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+                method: "POST",
+                dataType: "json",
                 data:
                 {
-                    twitch_username: this.username,
-                    twitch_oauth: this.oAuth
+                    "q": JSON.stringify(
+                    {
+                        update_twitch:
+                        {
+                            twitch_username: this.username,
+                            twitch_oauth: this.oAuth
+                        }
+                    })
+                },
+                error: Main.ThrowAJAXJsonError,
+                success: (response: { result: any }) => //I don't need to check for the data type here as jQuery will try to steralise the JSON, if it fails then the error function will run
+                {
+                    if (response.result == "Invalid Account Details") { this.eventDispatcher.dispatch("showLoginMenu"); }
                 }
             });
         }
@@ -392,10 +405,20 @@ export class Settings
 
     private LoadUserSettings()
     {
-        Settings.SettingsPHP(
+        jQuery.ajax(
         {
-            method: "get_all",
-            success: (response) =>
+            url: `${Main.WEB_ROOT}/assets/php/settings.php`,
+            method: "POST",
+            dataType: "json",
+            data:
+            {
+                "q": JSON.stringify(
+                {
+                    get_all: ""
+                })
+            },
+            error: Main.ThrowAJAXJsonError,
+            success: (response: { result: any }) =>
             {
                 var data: StreamChatDB;
                 if ((response.result as StreamChatDB) != null)
@@ -460,7 +483,7 @@ type RadioTab =
 
 type StreamChatDB =
 {
-    uid: string,
+    unid: string,
     twitch_username: string | null,
     twitch_oauth: string | null,
     tts_mode: 0 | 1 | 2, //Off, AWS, WebSpeechAPI
@@ -470,12 +493,5 @@ type StreamChatDB =
     aws_region: string | null,
     aws_identity_pool: string,
     stt_enabled: 0 | 1,
-    stt_listeners: string | null,
-    dateAltered: string
-}
-
-export interface ReturnData
-{
-    error: boolean,
-    data: any
+    stt_listeners: string | null
 }

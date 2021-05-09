@@ -1,7 +1,5 @@
-import { timeStamp } from "console.js";
-import { start } from "repl.js";
-import { EventDispatcher } from "./eventDispatcher.js";
-import { Main } from "./main.js";
+import { EventDispatcher } from "./eventDispatcher";
+import { Main } from "./main";
 
 export class TwitchWS
 {
