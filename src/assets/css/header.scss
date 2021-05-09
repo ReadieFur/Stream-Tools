@@ -1,0 +1,223 @@
+header
+{
+    background-color: rgba(var(--backgroundColour), 1);
+    width: 100%;
+    height: 100px;
+    margin: 0;
+    position: relative;
+    z-index: 999;
+
+    *
+    {
+        user-select: none;
+    }
+    
+    > hr
+    {
+        border-bottom: 1px solid rgba(var(--accentColour), 1);
+        margin: 0;
+    }
+
+    > section
+    {
+        position: relative;
+        z-index: 999;
+    }
+
+    .titleContainer
+    {
+        position: relative;
+        height: 100px;
+
+        .title
+        {
+            &:hover
+            {
+                color: rgba(var(--accentColour), 1);
+            }
+        }
+    }
+
+    .titleIcon
+    {
+        position: relative;
+        float: left;
+        transform: translate(0, 15%);
+    }
+
+    .title
+    {
+        position: relative;
+        top: 50px;
+        left: 20px;
+        line-height: 10px;
+        margin: 0;
+        padding: 0;
+        transform: translate(0%, -50%);
+        width: 325px;
+    }
+
+    .navigationContainer
+    {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translate(0%, -50%);
+        font-weight: bolder;
+        font-size: 1.25rem;
+
+        > *
+        {
+            float: left;
+            margin-left: 50px;
+        
+            &:hover
+            {
+                cursor: pointer;
+                color: rgba(var(--accentColour), 1);
+            }
+        }
+    }
+
+    .naviDropdown
+    {
+        > a
+        {
+            &:hover
+            {
+                cursor: default;
+            }
+        }
+
+        &:hover
+        {
+            .dropdownContent
+            {
+                display: block;
+            }
+        }
+    }
+
+    .dropdownContent
+    {
+        font-size: 1.1rem;
+        display: none;
+        position: absolute;
+        z-index: 1;
+
+        > *
+        {
+            &:first-child
+            {
+                height: 15px;
+            }
+    
+            &:last-child
+            {
+                border-radius: 4px;
+                background-color: rgba(var(--backgroundAltColour), 0.5);
+                backdrop-filter: blur(2px);
+    
+                > a
+                {
+                    float: none;
+                    color: rgba(var(--foregroundColour), 1);
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    display: block;
+                    text-align: left;
+    
+                    &:hover
+                    {
+                        color: rgba(var(--accentColour), 1);
+                    }
+                }
+            }
+        }
+    }
+}
+
+#darkMode { cursor: pointer; }
+
+.slideMenu
+{
+    width: 100%;
+    position: fixed;
+    z-index: 998;
+    height: 100px;
+    cursor: pointer;
+}
+
+#accountContainer
+{
+    display: none;
+    z-index: inherit;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border: none;
+    width: 100%;
+    height: 100%;
+}
+
+#alertBoxContainer
+{
+    display: none;
+    z-index: inherit;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border: none;
+    width: 100%;
+    height: 100%;
+
+    > .background
+    {
+        z-index: 10;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        backdrop-filter: blur(2px);
+    }
+
+    > #alertBox
+    {
+        z-index: 20;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;
+        border: 1px solid rgba(var(--foregroundColour), 1);
+        background-color: rgba(var(--backgroundColour), 1);
+        padding: 5px 20px;
+        width: max-content;
+        height: max-content;
+        max-width: 90%;
+        max-height: 90%;
+
+        > #alertBoxTextBox
+        {
+            display: none;
+        }
+
+        > p
+        {
+            text-align: center;
+
+            &.dismissText
+            {
+                > small
+                {
+                    font-weight: normal;
+                    text-align: center;
+                }
+            }
+        }
+    }
+}

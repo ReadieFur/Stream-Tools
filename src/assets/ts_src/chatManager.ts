@@ -1,5 +1,5 @@
+import { Main } from "./main";
 import { EventDispatcher } from "./eventDispatcher";
-import { Main } from "./main"
 import { TwitchWS, PRIVMSG } from "./twitchWS";
 import { SpeechManager } from "./speechManager";
 

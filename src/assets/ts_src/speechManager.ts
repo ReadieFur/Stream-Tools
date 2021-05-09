@@ -1,5 +1,5 @@
-import { EventDispatcher } from "./eventDispatcher";
 import { Main } from "./main";
+import { EventDispatcher } from "./eventDispatcher";
 import AWS from "aws-sdk";
 import { PRIVMSG } from "./twitchWS";
 

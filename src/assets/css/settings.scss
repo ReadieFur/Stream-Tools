@@ -19,8 +19,8 @@
 {
     width: 800px;
     height: 500px;
-    background-color: rgb(var(--backgroundAlt));
-    border: 1px solid rgb(var(--foreground));
+    background-color: rgba(var(--backgroundAlt), 1);
+    border: 1px solid rgba(var(--foreground), 1);
     border-radius: 10px;
 }
 
@@ -63,8 +63,8 @@
     transform: translateY(-50%);
     height: 15px;
     width: 15px;
-    background-color: rgb(var(--background));
-    border: 1px solid rgb(var(--foreground));
+    background-color: rgba(var(--background), 1);
+    border: 1px solid rgba(var(--foreground), 1);
     border-radius: 50%;
 }
 
@@ -87,7 +87,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: rgb(var(--foreground));
+    background: rgba(var(--foreground), 1);
 }
 /*#endregion*/
 
@@ -120,8 +120,8 @@
     transform: translateY(-50%);
     height: 15px;
     width: 15px;
-    background-color: rgb(var(--background));
-    border: 1px solid rgb(var(--foreground));
+    background-color: rgba(var(--background), 1);
+    border: 1px solid rgba(var(--foreground), 1);
 }
   
 .checkboxContainer input:checked ~ .checkmark
@@ -148,7 +148,7 @@
     transform: translate(-50%, -50%) rotate(45deg);
     width: 3px;
     height: 8px;
-    border: solid rgb(var(--foreground));
+    border: solid rgba(var(--foreground), 1);
     border-width: 0 2px 2px 0;
 }
 
@@ -185,7 +185,7 @@
 input[type="text"]
 {
     border: none;
-    border-bottom: 1px solid rgb(var(--foreground));
+    border-bottom: 1px solid rgba(var(--foreground), 1);
     width: 40%;
     box-sizing: border-box;
     height: 30px;
@@ -212,7 +212,7 @@ input:disabled
     height: 30px;
     border: 0;
     background-color: transparent;
-    border-bottom: 1px solid rgb(var(--foreground));
+    border-bottom: 1px solid rgba(var(--foreground), 1);
 }
 
 .settingsTabs button
@@ -267,8 +267,8 @@ input:disabled
     height: max-content;
     max-height: 150px;
     font-weight: normal;
-    background-color: rgb(var(--background));
-    border: 1px solid rgb(var(--foreground));
+    background-color: rgba(var(--background), 1);
+    border: 1px solid rgba(var(--foreground), 1);
     border-radius: 7.5px;
     outline: none;
     outline-width: 0;
@@ -298,20 +298,20 @@ input:disabled
     font-weight: normal;
     outline-width: 0;
     border: 0;
-    border-bottom: 1px solid rgb(var(--foreground));
+    border-bottom: 1px solid rgba(var(--foreground), 1);
     cursor: pointer;
 }
 
 #inputDevices > option
 {
     font-weight: normal;
-    background-color: rgb(var(--background));
+    background-color: rgba(var(--background), 1);
 }
 
 /*Modify for scrolling after a certain height and more custom css like accent hover colour*/
 #inputDevices > option:hover
 {
-    background-color: rgb(var(--main-accent));
+    background-color: rgba(var(--main-accent), 1);
 }
 
 #saveVCSettings

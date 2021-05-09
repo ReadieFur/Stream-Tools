@@ -85,12 +85,12 @@ table
     user-select: none;
     box-sizing: border-box;
     resize: none;
-    border: 1px solid rgb(var(--foreground));
+    border: 1px solid rgba(var(--foreground), 1);
     border-radius: 10px;
     min-height: 50px;
     height: max-content;
     width: 100%;
-    background-color: rgb(var(--backgroundAlt));
+    background-color: rgba(var(--backgroundAlt), 1);
     margin-bottom: 10px;
     padding: 5px 7.5px;
     outline-width: 0;
@@ -139,7 +139,7 @@ table
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: rgb(var(--foreground));
+    background: rgba(var(--foreground), 1);
     cursor: pointer;
 }
 

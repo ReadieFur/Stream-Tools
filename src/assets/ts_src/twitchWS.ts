@@ -1,5 +1,3 @@
-import { timeStamp } from "console";
-import { start } from "repl";
 import { EventDispatcher } from "./eventDispatcher";
 import { Main } from "./main";
 

@@ -118,9 +118,7 @@ export class Settings
             {
                 "q": JSON.stringify(
                 {
-                    vcInputDevice: inputDevice,
-                    unid: Main.RetreiveCache("READIE-UI"),
-                    pass: Main.RetreiveCache("READIE-UP")
+                    vcInputDevice: inputDevice
                 })
             },
             error: Main.ThrowAJAXJsonError,
@@ -196,9 +194,7 @@ export class Settings
                 {
                     "q": JSON.stringify(
                     {
-                        stt_enabled: input.checked ? 1 : 0,
-                        unid: Main.RetreiveCache("READIE-UI"),
-                        pass: Main.RetreiveCache("READIE-UP")
+                        stt_enabled: input.checked ? 1 : 0
                     })
                 },
                 error: Main.ThrowAJAXJsonError,
@@ -260,9 +256,7 @@ export class Settings
                 {
                     "q": JSON.stringify(
                     {
-                        ttsMode: ttsMode,
-                        unid: Main.RetreiveCache("READIE-UI"),
-                        pass: Main.RetreiveCache("READIE-UP")
+                        ttsMode: ttsMode
                     })
                 },
                 error: Main.ThrowAJAXJsonError,
@@ -330,9 +324,7 @@ export class Settings
                 {
                     "q": JSON.stringify(
                     {
-                        update_tts: options,
-                        unid: Main.RetreiveCache("READIE-UI"),
-                        pass: Main.RetreiveCache("READIE-UP")
+                        update_tts: options
                     })
                 },
                 error: Main.ThrowAJAXJsonError,
@@ -399,9 +391,7 @@ export class Settings
                         {
                             twitch_username: this.username,
                             twitch_oauth: this.oAuth
-                        },
-                        unid: Main.RetreiveCache("READIE-UI"),
-                        pass: Main.RetreiveCache("READIE-UP")
+                        }
                     })
                 },
                 error: Main.ThrowAJAXJsonError,
@@ -424,9 +414,7 @@ export class Settings
             {
                 "q": JSON.stringify(
                 {
-                    get_all: "",
-                    unid: Main.RetreiveCache("READIE-UI"),
-                    pass: Main.RetreiveCache("READIE-UP")
+                    get_all: ""
                 })
             },
             error: Main.ThrowAJAXJsonError,
