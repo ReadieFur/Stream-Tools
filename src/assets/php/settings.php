@@ -48,8 +48,8 @@ if (!$sessionValid->error && $sessionValid->data === true)
                 $result = $stream_tools->Update(
                     array(
                         'twitch_username'=>$query['update_twitch']['twitch_username'],
-                        'twitch_oauth'=>$query['update_twitch']['twitch_oauth'],
-                        'alteredDate'=>'current_timestamp()'
+                        'twitch_oauth'=>$query['update_twitch']['twitch_oauth']
+                        //'alteredDate'=>'current_timestamp()'
                     ),
                     array(
                         'unid'=>$unid
@@ -65,8 +65,8 @@ if (!$sessionValid->error && $sessionValid->data === true)
                 $result = $stream_tools->Insert(array(
                     'unid'=>$unid,
                     'twitch_username'=>$query['update_twitch']['twitch_username'],
-                    'twitch_oauth'=>$query['update_twitch']['twitch_oauth'],
-                    'alteredDate'=>'current_timestamp()'
+                    'twitch_oauth'=>$query['update_twitch']['twitch_oauth']
+                    //'alteredDate'=>'current_timestamp()'
                 ));
     
                 if ($result->error || !$result->data) { $response->result = 'Failed to update twitch credentials'; }
@@ -85,8 +85,8 @@ if (!$sessionValid->error && $sessionValid->data === true)
             {
                 $result = $stream_tools->Update(
                     array(
-                        'tts_mode'=>$query['ttsMode'],
-                        'alteredDate'=>'current_timestamp()'
+                        'tts_mode'=>$query['ttsMode']
+                        //'alteredDate'=>'current_timestamp()'
                     ),
                     array(
                         'unid'=>$unid
@@ -100,8 +100,8 @@ if (!$sessionValid->error && $sessionValid->data === true)
             {
                 $result = $stream_tools->Insert(array(
                     'unid'=>$unid,
-                    'tts_mode'=>$query['ttsMode'],
-                    'alteredDate'=>'current_timestamp()'
+                    'tts_mode'=>$query['ttsMode']
+                    //'alteredDate'=>'current_timestamp()'
                 ));
     
                 if ($result->error || !$result->data) { $response->result = 'Failed to update ttsMode'; }
@@ -122,8 +122,8 @@ if (!$sessionValid->error && $sessionValid->data === true)
                         'aws_region'=>$query['update_tts']['awsRegion'],
                         'aws_identity_pool'=>$query['update_tts']['awsIdentityPoolID'],
                         'tts_filter_mode'=>$query['update_tts']['filterMode'],
-                        'tts_filters'=>$query['update_tts']['filterWords'],
-                        'alteredDate'=>'current_timestamp()'
+                        'tts_filters'=>$query['update_tts']['filterWords']
+                        //'alteredDate'=>'current_timestamp()'
                     ),
                     array(
                         'unid'=>$unid
@@ -140,8 +140,8 @@ if (!$sessionValid->error && $sessionValid->data === true)
                     'aws_region'=>$query['update_tts']['awsRegion'],
                     'aws_identity_pool'=>$query['update_tts']['awsIdentityPoolID'],
                     'tts_filter_mode'=>$query['update_tts']['filterMode'],
-                    'tts_filters'=>$query['update_tts']['filterWords'],
-                    'alteredDate'=>'current_timestamp()'
+                    'tts_filters'=>$query['update_tts']['filterWords']
+                    //'alteredDate'=>'current_timestamp()'
                 ));
     
                 if ($result->error || !$result->data) { $response->result = 'Failed to update TTS options'; }
@@ -159,8 +159,8 @@ if (!$sessionValid->error && $sessionValid->data === true)
             {
                 $result = $stream_tools->Update(
                     array(
-                        'stt_enabled'=>$query['stt_enabled'],
-                        'alteredDate'=>'current_timestamp()'
+                        'stt_enabled'=>$query['stt_enabled']
+                        //'alteredDate'=>'current_timestamp()'
                     ),
                     array(
                         'unid'=>$unid
@@ -174,8 +174,8 @@ if (!$sessionValid->error && $sessionValid->data === true)
             {
                 $result = $stream_tools->Insert(array(
                     'unid'=>$unid,
-                    'stt_enabled'=>$query['stt_enabled'],
-                    'alteredDate'=>'current_timestamp()'
+                    'stt_enabled'=>$query['stt_enabled']
+                    //'alteredDate'=>'current_timestamp()'
                 ));
     
                 if ($result->error || !$result->data) { $response->result = 'Failed to update vcMode'; }
