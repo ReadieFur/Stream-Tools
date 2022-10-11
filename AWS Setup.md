@@ -36,4 +36,4 @@ In order to interact with AWS services you need to have setup a developer accoun
 - Click on the **Attach policies** button.
 - Find and select the checkbox for **AmazonPollyFullAccess**, then press the **Attach policy** button at the bottom of the page.
 
-You should now have setup an AWS account for AWS polly. With the details we have kept a note of go back to the TTS settings page on the [Stream-Chat](http://readie.global-gaming.co/stream-chat/) and past in your info, happy TTSing!
+You should now have setup an AWS account for AWS polly. With the details we have kept a note of go back to the TTS settings page on the [Stream-Chat](https://readiefur.com/stream-chat/) and past in your info, happy TTS-ing!

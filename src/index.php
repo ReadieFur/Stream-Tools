@@ -15,16 +15,16 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Stream Chat"/>
     <meta property="og:description" content="A stream chat service that..."/>
-    <meta property="og:url" content="https://readie.global-gaming.co/stream-chat"/>
-    <meta property="og:image" content="https://cdn-readie.global-gaming.co/images/team/members/readiecircle.png"/>
+    <meta property="og:url" content="https://readiefur.com/stream-chat"/>
+    <meta property="og:image" content="https://cdn.readiefur.com/images/team/members/readiecircle.png"/>
     <title>Stream Tools</title>
-    <link rel="icon" href="https://cdn-readie.global-gaming.co/images/team/members/readiecircle.png" type="image/png">
+    <link rel="icon" href="https://cdn.readiefur.com/images/team/members/readiecircle.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7cOpen+Sans:400,700" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="<?php echo $WEB_ROOT; ?>/assets/css/main.css"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $WEB_ROOT; ?>/assets/css/chat.css"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $WEB_ROOT; ?>/assets/css/settings.css"/>
-    <script src="https://cdn-readie.global-gaming.co/resources/scripts/jquery/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn-readie.global-gaming.co/resources/scripts/aws/aws-sdk-2.840.0.min.js"></script>
+    <script src="https://cdn.readiefur.com/resources/scripts/jquery/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.readiefur.com/resources/scripts/aws/aws-sdk-2.840.0.min.js"></script>
     <script src="<?php echo $WEB_ROOT; ?>/assets/js/bundle.js" type="module"></script>
     <script>var WEB_ROOT = "<?php echo $WEB_ROOT; ?>";</script>
     <style id="themeColours"></style>
@@ -35,7 +35,7 @@
         <span class="bottomStripThin"></span>
         <div class="titleContainer">
             <a href="<?php echo $WEB_ROOT; ?>/">
-                <img class="imgSmall titleIcon" src="https://cdn-readie.global-gaming.co/images/team/members/readiecircle.png" alt="Where is the logo?">
+                <img class="imgSmall titleIcon" src="https://cdn.readiefur.com/images/team/members/readiecircle.png" alt="Where is the logo?">
                 <h3 class="title">Stream Tools</h3>
             </a>
         </div>
@@ -44,7 +44,7 @@
             <a id="accountButton">Account</a>
         </div>
     </section>
-    <iframe id="accountContainer" src="//api-readie.global-gaming.<?php echo $DOMAIN[count($DOMAIN) - 1]; ?>/account/"></iframe>
+    <iframe id="accountContainer" src="//api.readiefur.<?php echo $DOMAIN[count($DOMAIN) - 1]; ?>/account/"></iframe>
     <div id="alertBoxContainer">
         <div class="background"></div>
         <div id="alertBox">
